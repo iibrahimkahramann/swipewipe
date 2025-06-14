@@ -9,7 +9,7 @@ final monthlyMediaProvider =
 
   final albums = await PhotoManager.getAssetPathList(
     onlyAll: true,
-    type: RequestType.image,
+    type: RequestType.all,
   );
 
   final mediaList = await albums.first.getAssetListPaged(page: 0, size: 1000);

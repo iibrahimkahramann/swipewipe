@@ -18,14 +18,10 @@ class _StatistiscViewState extends ConsumerState<StatistiscView> {
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () => context.go('/settings'),
-          ),
           title: Text(
-            'Statistisc',
-            style: CustomTheme.textTheme(context).bodyLarge,
-          )),
+        'Statistisc',
+        style: CustomTheme.textTheme(context).bodyLarge,
+      )),
       body: Padding(
         padding: EdgeInsets.symmetric(
           horizontal: width * 0.03,
@@ -43,7 +39,7 @@ class _StatistiscViewState extends ConsumerState<StatistiscView> {
               child: Image.asset('assets/images/statistics_image.png'),
             ),
             SizedBox(
-              height: height * 0.015,
+              height: height * 0.01,
             ),
             DefaultStatistiscConainer(
               width: width,
@@ -51,7 +47,7 @@ class _StatistiscViewState extends ConsumerState<StatistiscView> {
               title: '1987 Fotoğraf',
             ),
             SizedBox(
-              height: height * 0.015,
+              height: height * 0.01,
             ),
             DefaultStatistiscConainer(
               width: width,
@@ -59,7 +55,7 @@ class _StatistiscViewState extends ConsumerState<StatistiscView> {
               title: '23 Fotoğraf',
             ),
             SizedBox(
-              height: height * 0.015,
+              height: height * 0.01,
             ),
             DefaultStatistiscConainer(
               width: width,
@@ -67,12 +63,44 @@ class _StatistiscViewState extends ConsumerState<StatistiscView> {
               title: '34 Fotoğraf Silindi',
             ),
             SizedBox(
-              height: height * 0.015,
+              height: height * 0.01,
             ),
             DefaultStatistiscConainer(
               width: width,
               height: height,
               title: '199 KB Kaydedildi',
+            ),
+            SizedBox(
+              height: height * 0.02,
+            ),
+            GestureDetector(
+              onTap: () {
+                context.go('/settings');
+              },
+              child: Container(
+                height: height * 0.1,
+                width: width,
+                decoration: BoxDecoration(
+                  color: CustomTheme.accentColor,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.elliptical(40, 40),
+                    topRight: Radius.elliptical(40, 40),
+                    bottomLeft: Radius.elliptical(30, 30),
+                    bottomRight: Radius.elliptical(30, 30),
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    'Geri Dön',
+                    style: CustomTheme.textTheme(context).bodyMedium?.copyWith(
+                          color: CustomTheme.backgroundColor,
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.bold,
+                          fontStyle: FontStyle.italic,
+                        ),
+                  ),
+                ),
+              ),
             ),
           ],
         ),

@@ -1,10 +1,14 @@
+import 'dart:io';
+import 'dart:typed_data';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:swipewipe/config/theme/custom_theme.dart';
 import 'package:swipewipe/providers/swipe/swipe_background_witget.dart';
 import 'package:swipewipe/providers/swipe/swipe_provider.dart';
-import 'dart:math' as math;
+import 'package:swipewipe/providers/swipe/video_player_witget.dart';
+import 'package:flutter/services.dart'; // hata kontrolü için
 
 class SwipeImagePage extends ConsumerStatefulWidget {
   final List<AssetEntity> mediaList;
@@ -34,34 +38,84 @@ class _SwipeImagePageState extends ConsumerState<SwipeImagePage> {
     });
   }
 
+  Future<void> _deleteSelectedAssets() async {
+    final assets = ref.read(swipePendingDeleteProvider);
+    if (assets.isEmpty) return;
+
+    try {
+      await PhotoManager.editor.deleteWithIds(assets.map((e) => e.id).toList());
+      ref.read(swipePendingDeleteProvider.notifier).clear();
+    } catch (e) {
+      print('hata');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final images = ref.watch(swipeImagesProvider);
     ref.watch(swipeCurrentIndexProvider);
+    final toBeDeleted = ref.watch(swipePendingDeleteProvider);
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
 
     if (images.isEmpty) {
       return Scaffold(
         appBar: AppBar(
-            title: Text(
-          'Swipewipe',
-          style: CustomTheme.textTheme(context).bodyLarge,
-        )),
+          title: Text(
+            'Swipewipe',
+            style: CustomTheme.textTheme(context).bodyLarge,
+          ),
+        ),
         body: Center(
-            child: Text(
-          "Tüm görseller işlendi",
-          style: CustomTheme.textTheme(context)
-              .bodyMedium
-              ?.copyWith(color: Colors.white38),
-        )),
+          child: Text(
+            "Tüm görseller işlendi",
+            style: CustomTheme.textTheme(context)
+                .bodyMedium
+                ?.copyWith(color: Colors.white38),
+          ),
+        ),
       );
     }
 
     return Scaffold(
       appBar: AppBar(
-          title: Text(
-        'Swipewipe',
-        style: CustomTheme.textTheme(context).bodyLarge,
-      )),
+        title: Text(
+          'Swipewipe',
+          style: CustomTheme.textTheme(context).bodyLarge,
+        ),
+        actions: [
+          Stack(
+            children: [
+              IconButton(
+                icon: Icon(Icons.delete_forever),
+                onPressed:
+                    toBeDeleted.isNotEmpty ? _deleteSelectedAssets : null,
+                tooltip: 'Seçilenleri Sil',
+              ),
+              if (toBeDeleted.isNotEmpty)
+                Positioned(
+                  right: 8,
+                  top: 8,
+                  child: Container(
+                    padding: EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Text(
+                      '${toBeDeleted.length}',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
       body: PageView.builder(
         controller: _pageController,
         itemCount: images.length,
@@ -87,54 +141,31 @@ class _SwipeImagePageState extends ConsumerState<SwipeImagePage> {
               alignment: Alignment.centerRight,
             ),
             onDismissed: (direction) {
-              if (direction == DismissDirection.startToEnd) {
-                ref.read(swipeImagesProvider.notifier).removeAt(index);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      "Saklandı",
-                      style: CustomTheme.textTheme(context)
-                          .bodyMedium
-                          ?.copyWith(color: Colors.black),
-                    ),
-                  ),
-                );
-              } else {
-                ref.read(swipeImagesProvider.notifier).removeAt(index);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      "Silindi",
-                      style: CustomTheme.textTheme(context)
-                          .bodyMedium
-                          ?.copyWith(color: Colors.black),
-                    ),
-                  ),
-                );
+              if (direction == DismissDirection.endToStart) {
+                ref.read(swipePendingDeleteProvider.notifier).add(img);
               }
+
+              ref.read(swipeImagesProvider.notifier).removeAt(index);
             },
             child: TweenAnimationBuilder<double>(
               tween: Tween<double>(begin: 0.0, end: 1.0),
               duration: const Duration(milliseconds: 300),
               curve: Curves.easeOut,
               builder: (context, value, child) {
-                // value: 0.0 → 1.0 arasında animasyon ilerlemesi
                 return GestureDetector(
-                  onHorizontalDragUpdate: (details) {
-                    // sadece animasyon için dummy, kontrol Dismissible'da zaten
-                  },
                   child: Opacity(
                     opacity: value,
                     child: Transform.rotate(
-                      angle: (1 - value) * 0.05 * math.pi, // Hafif dönüş efekti
+                      angle: (1 - value) * 0.05 * math.pi,
                       child: child,
                     ),
                   ),
                 );
               },
               child: FutureBuilder(
-                future:
-                    img.thumbnailDataWithSize(const ThumbnailSize(800, 800)),
+                future: img.type == AssetType.video
+                    ? img.file
+                    : img.thumbnailDataWithSize(const ThumbnailSize(600, 600)),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
                     return const SizedBox(
@@ -143,21 +174,64 @@ class _SwipeImagePageState extends ConsumerState<SwipeImagePage> {
                     );
                   }
 
-                  return Card(
-                    margin: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 10),
-                    elevation: 6,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    clipBehavior: Clip.antiAlias,
-                    child: Image.memory(
-                      snapshot.data!,
-                      height: 600,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
-                  );
+                  if (img.type == AssetType.video) {
+                    final file = snapshot.data as File;
+                    return VideoPlayerWidget(
+                      videoFile: file,
+                      width: width,
+                      height: height * 0.7, // Önemli! Görselle eşleştirildi
+                    );
+                  } else {
+                    final bytes = snapshot.data as Uint8List;
+                    return Card(
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 10),
+                      elevation: 6,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      child: Column(
+                        children: [
+                          Image.memory(
+                            bytes,
+                            height: height * 0.7,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
+                          SizedBox(height: height * 0.03),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                width: width * 0.35,
+                                height: height * 0.07,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.green,
+                                ),
+                                child: Center(
+                                    child: Text(
+                                  'Sakla',
+                                  style:
+                                      CustomTheme.textTheme(context).bodyMedium,
+                                )),
+                              ),
+                              Container(
+                                width: width * 0.35,
+                                height: height * 0.07,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.red,
+                                ),
+                                child: Center(child: Text('Sil')),
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                    );
+                  }
                 },
               ),
             ),

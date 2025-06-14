@@ -15,11 +15,26 @@ class SwipeImagesNotifier extends StateNotifier<List<AssetEntity>> {
   }
 }
 
+class PendingDeleteNotifier extends StateNotifier<List<AssetEntity>> {
+  PendingDeleteNotifier() : super([]);
+
+  void add(AssetEntity asset) {
+    state = [...state, asset];
+  }
+
+  void clear() {
+    state = [];
+  }
+}
+
 final swipeImagesProvider =
     StateNotifierProvider<SwipeImagesNotifier, List<AssetEntity>>((ref) {
   return SwipeImagesNotifier();
 });
 
-final swipeCurrentIndexProvider = StateProvider<int>((ref) {
-  return 0; // Başlangıç indeksi
+final swipeCurrentIndexProvider = StateProvider<int>((ref) => 0);
+
+final swipePendingDeleteProvider =
+    StateNotifierProvider<PendingDeleteNotifier, List<AssetEntity>>((ref) {
+  return PendingDeleteNotifier();
 });

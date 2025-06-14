@@ -66,7 +66,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
             ),
           ),
           Container(
-            height: 1,
+            height: width * 0.0005,
             color: CustomTheme.boldColor,
           ),
         ],

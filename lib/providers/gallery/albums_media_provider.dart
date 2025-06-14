@@ -6,7 +6,7 @@ final albumListProvider = FutureProvider<List<AssetPathEntity>>((ref) async {
   if (!permission.isAuth) return [];
 
   final albums = await PhotoManager.getAssetPathList(
-    type: RequestType.image,
+    type: RequestType.all,
     filterOption: FilterOptionGroup(
       imageOption: const FilterOption(
         sizeConstraint: SizeConstraint(ignoreSize: true),
