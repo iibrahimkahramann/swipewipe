@@ -54,6 +54,7 @@ final router = GoRouter(
       pageBuilder: (context, state) =>
           fadeScalePage(child: SettingsView(), state: state),
     ),
+
     GoRoute(
       path: '/albums',
       pageBuilder: (context, state) =>

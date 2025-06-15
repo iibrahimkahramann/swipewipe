@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:swipewipe/components/settings/default_statistics_container.dart';
 import 'package:swipewipe/config/theme/custom_theme.dart';
+import 'package:swipewipe/providers/swipe/swipe_provider.dart';
+import 'package:swipewipe/providers/gallery/gallery_permission_provider.dart';
 
 class StatistiscView extends ConsumerStatefulWidget {
   const StatistiscView({super.key});
@@ -16,6 +18,11 @@ class _StatistiscViewState extends ConsumerState<StatistiscView> {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
+    final stats = ref.watch(userGalleryStatsProvider);
+    final mediaAsync = ref.watch(mediaProvider);
+    if (stats.isLoading) {
+      return Center(child: CircularProgressIndicator());
+    }
     return Scaffold(
       appBar: AppBar(
           title: Text(
@@ -41,10 +48,22 @@ class _StatistiscViewState extends ConsumerState<StatistiscView> {
             SizedBox(
               height: height * 0.01,
             ),
-            DefaultStatistiscConainer(
-              width: width,
-              height: height,
-              title: '1987 Fotoğraf',
+            mediaAsync.when(
+              loading: () => DefaultStatistiscConainer(
+                width: width,
+                height: height,
+                title: 'Yükleniyor...',
+              ),
+              error: (e, _) => DefaultStatistiscConainer(
+                width: width,
+                height: height,
+                title: 'Hata',
+              ),
+              data: (mediaList) => DefaultStatistiscConainer(
+                width: width,
+                height: height,
+                title: '${mediaList.length} Fotoğraf',
+              ),
             ),
             SizedBox(
               height: height * 0.01,
@@ -52,7 +71,9 @@ class _StatistiscViewState extends ConsumerState<StatistiscView> {
             DefaultStatistiscConainer(
               width: width,
               height: height,
-              title: '23 Fotoğraf',
+              title: stats.isLoading
+                  ? 'Yükleniyor...'
+                  : '${stats.value?.savedCount ?? 0} Fotoğraf Saklandı',
             ),
             SizedBox(
               height: height * 0.01,
@@ -60,7 +81,7 @@ class _StatistiscViewState extends ConsumerState<StatistiscView> {
             DefaultStatistiscConainer(
               width: width,
               height: height,
-              title: '34 Fotoğraf Silindi',
+              title: '${stats.value?.deletedCount ?? 0} Fotoğraf Silindi',
             ),
             SizedBox(
               height: height * 0.01,
@@ -68,7 +89,8 @@ class _StatistiscViewState extends ConsumerState<StatistiscView> {
             DefaultStatistiscConainer(
               width: width,
               height: height,
-              title: '199 KB Kaydedildi',
+              title:
+                  '${((stats.value?.deletedTotalBytes ?? 0) / 1024).toStringAsFixed(1)} KB Kaydedildi',
             ),
             SizedBox(
               height: height * 0.02,
