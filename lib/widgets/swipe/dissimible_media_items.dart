@@ -11,11 +11,11 @@ class DismissibleMediaItem extends ConsumerWidget {
   final int fileSizeBytes;
 
   const DismissibleMediaItem({
-    Key? key,
+    super.key,
     required this.media,
     required this.index,
     required this.fileSizeBytes,
-  }) : super(key: key);
+  });
 
   Future<void> _onDismissed(
       BuildContext context, WidgetRef ref, DismissDirection direction) async {

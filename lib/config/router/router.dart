@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:photo_manager/photo_manager.dart';
-import 'package:swipewipe/providers/image_list_provider.dart';
 import 'package:swipewipe/views/albums/albums_view.dart';
 import 'package:swipewipe/views/organize/organize_view.dart';
 import 'package:swipewipe/views/settings/settings_view.dart';
@@ -68,14 +66,9 @@ final router = GoRouter(
         final initialIndex = extra['initialIndex'] as int;
 
         return fadeScalePage(
-          child: ProviderScope(
-            overrides: [
-              initialAssetList.overrideWithValue(mediaList),
-            ],
-            child: SwipeImagePage(
-              mediaList: mediaList,
-              initialIndex: initialIndex,
-            ),
+          child: SwipeImagePage(
+            mediaList: mediaList,
+            initialIndex: initialIndex,
           ),
           state: state,
         );

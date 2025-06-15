@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:swipewipe/config/theme/custom_theme.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:swipewipe/providers/swipe/swipe_provider.dart';
 
-class AlbumsContainerComponent extends StatelessWidget {
+class AlbumsContainerComponent extends ConsumerWidget {
   final double height;
   final double width;
   final String title;
   final String albumsTitle;
   final String albumsLeght;
-  final List<AssetEntity> photoList; // bunu eklemelisin
+  final List<AssetEntity> photoList;
 
   const AlbumsContainerComponent({
     super.key,
@@ -22,13 +24,16 @@ class AlbumsContainerComponent extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         SizedBox(height: height * 0.01),
         GestureDetector(
           onTap: () {
+            ref.read(swipeImagesProvider.notifier).setImages(photoList);
+            ref.read(swipeCurrentIndexProvider.notifier).state = 0;
+            ref.read(swipePendingDeleteProvider.notifier).clear();
             context.push(
               '/swipe',
               extra: {

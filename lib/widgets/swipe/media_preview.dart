@@ -7,7 +7,7 @@ import 'package:swipewipe/widgets/swipe/video_player_widget.dart';
 class MediaPreview extends StatelessWidget {
   final AssetEntity media;
 
-  const MediaPreview({Key? key, required this.media}) : super(key: key);
+  const MediaPreview({super.key, required this.media});
 
   @override
   Widget build(BuildContext context) {

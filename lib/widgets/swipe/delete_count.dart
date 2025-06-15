@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:swipewipe/providers/swipe/swipe_provider.dart';
 
 class DeleteCountBadge extends ConsumerWidget {
-  const DeleteCountBadge({Key? key}) : super(key: key);
+  const DeleteCountBadge({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

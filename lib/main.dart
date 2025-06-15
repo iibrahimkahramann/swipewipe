@@ -39,7 +39,7 @@ class MyApp extends StatefulWidget {
 }
 
 class MyAppState extends State<MyApp> {
-  bool _appIsReady = true;
+  final bool _appIsReady = true;
 
   // @override
   // void initState() {

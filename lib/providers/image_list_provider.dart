@@ -15,6 +15,7 @@ final imageListProvider =
 });
 
 class ImageListNotifier extends StateNotifier<List<AssetEntity>> {
+  // ignore: use_super_parameters
   ImageListNotifier(List<AssetEntity> initialList) : super(initialList);
 
   void removeImage(String id) {

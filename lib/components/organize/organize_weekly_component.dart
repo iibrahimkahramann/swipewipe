@@ -29,14 +29,15 @@ class OrganizeWeeklyComponent extends StatelessWidget {
             'Weekly',
             style: CustomTheme.textTheme(context).bodyMedium,
           ),
-          Container(
+          SizedBox(
             height: height * 0.27,
             child: FutureBuilder<List<Uint8List?>>(
               future: Future.wait(assets.take(3).map((asset) =>
                   asset.thumbnailDataWithSize(const ThumbnailSize(400, 400)))),
               builder: (context, snapshot) {
-                if (!snapshot.hasData)
+                if (!snapshot.hasData) {
                   return const Center(child: CircularProgressIndicator());
+                }
 
                 final thumbnails = snapshot.data!;
                 return Stack(

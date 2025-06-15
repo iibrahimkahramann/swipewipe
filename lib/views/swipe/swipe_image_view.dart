@@ -24,14 +24,34 @@ class SwipeImagePage extends ConsumerStatefulWidget {
 
 class _SwipeImagePageState extends ConsumerState<SwipeImagePage> {
   late final PageController _pageController;
+  List<int> _fileSizes = [];
+  bool _loadingSizes = true;
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: widget.initialIndex);
+    _calculateFileSizes();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(swipeImagesProvider.notifier).setImages(widget.mediaList);
-      ref.read(swipeCurrentIndexProvider.notifier).state = widget.initialIndex;
+      final currentImages = ref.read(swipeImagesProvider);
+      if (currentImages.isEmpty) {
+        ref.read(swipeImagesProvider.notifier).setImages(widget.mediaList);
+        ref.read(swipeCurrentIndexProvider.notifier).state =
+            widget.initialIndex;
+        ref.read(swipePendingDeleteProvider.notifier).clear();
+      }
+    });
+  }
+
+  Future<void> _calculateFileSizes() async {
+    final sizes = <int>[];
+    for (final asset in ref.read(swipeImagesProvider)) {
+      final file = await asset.file;
+      sizes.add(await file?.length() ?? 0);
+    }
+    setState(() {
+      _fileSizes = sizes;
+      _loadingSizes = false;
     });
   }
 
@@ -56,6 +76,12 @@ class _SwipeImagePageState extends ConsumerState<SwipeImagePage> {
     final images = ref.watch(swipeImagesProvider);
     final toBeDeleted = ref.watch(swipePendingDeleteProvider);
     final size = MediaQuery.of(context).size;
+
+    if (_loadingSizes) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
 
     if (images.isEmpty) {
       return Scaffold(
@@ -99,16 +125,10 @@ class _SwipeImagePageState extends ConsumerState<SwipeImagePage> {
         onPageChanged: (index) =>
             ref.read(swipeCurrentIndexProvider.notifier).state = index,
         itemBuilder: (context, index) {
-          return FutureBuilder<int>(
-            future: images[index].file.then((file) => file?.length() ?? 0),
-            builder: (context, snapshot) {
-              final fileSize = snapshot.data ?? 0;
-              return DismissibleMediaItem(
-                media: images[index],
-                index: index,
-                fileSizeBytes: fileSize,
-              );
-            },
+          return DismissibleMediaItem(
+            media: images[index],
+            index: index,
+            fileSizeBytes: _fileSizes.length > index ? _fileSizes[index] : 0,
           );
         },
       ),
