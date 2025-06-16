@@ -4,6 +4,7 @@ import 'package:photo_manager/photo_manager.dart';
 import 'package:swipewipe/views/albums/albums_view.dart';
 import 'package:swipewipe/views/organize/organize_view.dart';
 import 'package:swipewipe/views/settings/settings_view.dart';
+import 'package:swipewipe/views/splash/splash_view.dart';
 import 'package:swipewipe/views/statistics/statistisc_view.dart';
 import 'package:swipewipe/views/swipe/swipe_image_view.dart';
 
@@ -31,12 +32,12 @@ Page<dynamic> fadeScalePage(
 
 final router = GoRouter(
   navigatorKey: _rootNavigatorKey,
-  initialLocation: '/organize',
+  initialLocation: '/splash',
   routes: [
-    // GoRoute(
-    //   path: '/splash',
-    //   pageBuilder: (context, state) => NoTransitionPage(child: SplashView()),
-    // ),
+    GoRoute(
+      path: '/splash',
+      pageBuilder: (context, state) => NoTransitionPage(child: SplashView()),
+    ),
     GoRoute(
       path: '/organize',
       pageBuilder: (context, state) =>
@@ -52,7 +53,6 @@ final router = GoRouter(
       pageBuilder: (context, state) =>
           fadeScalePage(child: SettingsView(), state: state),
     ),
-
     GoRoute(
       path: '/albums',
       pageBuilder: (context, state) =>

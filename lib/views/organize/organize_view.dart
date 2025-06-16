@@ -59,7 +59,7 @@ class _OrganizeViewState extends ConsumerState<OrganizeView> {
                 );
               },
             ),
-            SizedBox(height: height * 0.02),
+            SizedBox(height: height * 0.01),
             Text(
               'By Month'.tr(),
               style: CustomTheme.textTheme(context).bodyMedium,
