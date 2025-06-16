@@ -72,7 +72,11 @@ class _SwipeImagePageState extends ConsumerState<SwipeImagePage> {
           'Swipewipe',
           style: CustomTheme.textTheme(context).bodyLarge,
         )),
-        body: Center(child: Text("Tüm görseller işlendi")),
+        body: Center(
+            child: Text(
+          "Tüm görseller işlendi",
+          style: CustomTheme.textTheme(context).bodyMedium,
+        )),
       );
     }
 
