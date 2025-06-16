@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:swipewipe/config/theme/custom_theme.dart';
 import 'package:swipewipe/providers/swipe/swipe_provider.dart';
-import 'package:swipewipe/widgets/swipe/delete_count.dart';
 import 'package:swipewipe/widgets/swipe/dissimible_media_items.dart';
 import 'package:swipewipe/providers/gallery/albums_media_provider.dart';
 import 'package:swipewipe/providers/gallery/monthly_media_providers.dart';
@@ -55,26 +54,9 @@ class _SwipeImagePageState extends ConsumerState<SwipeImagePage> {
     });
   }
 
-  Future<void> _deleteSelectedAssets() async {
-    final assetsToDelete = ref.read(swipePendingDeleteProvider);
-    if (assetsToDelete.isEmpty) return;
-
-    try {
-      await PhotoManager.editor
-          .deleteWithIds(assetsToDelete.map((e) => e.id).toList());
-      ref.read(swipePendingDeleteProvider.notifier).clear();
-      final _ = ref.refresh(albumListProvider);
-      // ignore: non_constant_identifier_names
-      final __ = ref.refresh(monthlyMediaProvider);
-    } catch (_) {
-      debugPrint('Asset silme hatası oluştu');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final images = ref.watch(swipeImagesProvider);
-    final toBeDeleted = ref.watch(swipePendingDeleteProvider);
     final size = MediaQuery.of(context).size;
 
     if (_loadingSizes) {
@@ -101,21 +83,55 @@ class _SwipeImagePageState extends ConsumerState<SwipeImagePage> {
           style: CustomTheme.textTheme(context).bodyLarge,
         ),
         actions: [
-          Stack(
-            children: [
-              IconButton(
-                icon: Icon(Icons.delete_forever, size: size.width * 0.07),
-                onPressed:
-                    toBeDeleted.isNotEmpty ? _deleteSelectedAssets : null,
-                tooltip: 'Seçilenleri Sil',
-              ),
-              if (toBeDeleted.isNotEmpty)
+          SizedBox(
+            width: size.width * 0.13,
+            height: size.width * 0.13,
+            child: Stack(
+              children: [
+                IconButton(
+                  icon: Icon(Icons.delete, size: size.width * 0.07),
+                  onPressed: () async {
+                    final globalDeleteList = ref.read(globalDeleteProvider);
+                    if (globalDeleteList.isEmpty) return;
+                    try {
+                      await PhotoManager.editor.deleteWithIds(
+                          globalDeleteList.map((e) => e.id).toList());
+                      ref.read(globalDeleteProvider.notifier).clear();
+                      final _ = ref.refresh(albumListProvider);
+                      // ignore: non_constant_identifier_names
+                      final __ = ref.refresh(monthlyMediaProvider);
+                    } catch (_) {
+                      debugPrint('Toplu silme hatası oluştu');
+                    }
+                  },
+                  tooltip: 'Toplu Sil (Çöp Kutusu)',
+                ),
+                // Badge tasarımı
                 Positioned(
                   right: size.width * 0.02,
                   top: size.height * 0.002,
-                  child: const DeleteCountBadge(),
+                  child: Consumer(
+                    builder: (context, ref, _) {
+                      final count = ref.watch(globalDeleteProvider).length;
+                      if (count == 0) return const SizedBox.shrink();
+                      return Container(
+                        padding: EdgeInsets.all(size.width * 0.012),
+                        decoration: const BoxDecoration(
+                            color: Colors.red, shape: BoxShape.circle),
+                        child: Text(
+                          '$count',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: size.width * 0.03,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ),
-            ],
+              ],
+            ),
           ),
         ],
       ),

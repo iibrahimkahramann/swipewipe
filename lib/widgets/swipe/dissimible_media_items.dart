@@ -21,7 +21,8 @@ class DismissibleMediaItem extends ConsumerWidget {
       BuildContext context, WidgetRef ref, DismissDirection direction) async {
     ref.read(swipeImagesProvider.notifier).removeAt(index);
     if (direction == DismissDirection.endToStart) {
-      ref.read(swipePendingDeleteProvider.notifier).add(media);
+      // Hem local hem global delete provider'a ekle
+      ref.read(globalDeleteProvider.notifier).add(media);
       await ref
           .read(userGalleryStatsProvider.notifier)
           .addDeleted(fileSizeBytes);

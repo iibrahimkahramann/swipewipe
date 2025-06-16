@@ -93,6 +93,24 @@ class UserGalleryStatsNotifier extends AsyncNotifier<UserGalleryStats> {
   }
 }
 
+class GlobalDeleteNotifier extends StateNotifier<List<AssetEntity>> {
+  GlobalDeleteNotifier() : super([]);
+
+  void add(AssetEntity asset) {
+    if (!state.any((e) => e.id == asset.id)) {
+      state = [...state, asset];
+    }
+  }
+
+  void remove(AssetEntity asset) {
+    state = state.where((e) => e.id != asset.id).toList();
+  }
+
+  void clear() {
+    state = [];
+  }
+}
+
 final swipeImagesProvider =
     StateNotifierProvider<SwipeImagesNotifier, List<AssetEntity>>((ref) {
   return SwipeImagesNotifier();
@@ -108,3 +126,8 @@ final swipePendingDeleteProvider =
 final userGalleryStatsProvider =
     AsyncNotifierProvider<UserGalleryStatsNotifier, UserGalleryStats>(
         UserGalleryStatsNotifier.new);
+
+final globalDeleteProvider =
+    StateNotifierProvider<GlobalDeleteNotifier, List<AssetEntity>>((ref) {
+  return GlobalDeleteNotifier();
+});
