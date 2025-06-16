@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -34,7 +35,6 @@ class _OrganizeViewState extends ConsumerState<OrganizeView> {
         ),
         child: ListView(
           children: [
-            // Haftalık
             groupedWeeklyMediaAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, _) => Text('Hata: $e'),
@@ -59,14 +59,11 @@ class _OrganizeViewState extends ConsumerState<OrganizeView> {
                 );
               },
             ),
-
             SizedBox(height: height * 0.02),
-
             Text(
-              'By Month',
+              'By Month'.tr(),
               style: CustomTheme.textTheme(context).bodyMedium,
             ),
-
             groupedMonthlyMediaAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, _) => Center(child: Text('Hata: $e')),
@@ -81,7 +78,7 @@ class _OrganizeViewState extends ConsumerState<OrganizeView> {
                     return AlbumsContainerComponent(
                       height: height,
                       width: width,
-                      title: 'By Month',
+                      title: '',
                       albumsTitle: monthTitle,
                       albumsLeght: photos.length.toString(),
                       photoList: photos,

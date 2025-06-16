@@ -35,6 +35,8 @@
 	<string>Main</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Permission is required to access your photos.</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>This app uses tracking to provide a better user experience and personalized content.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Permission is required to access and manage your photos.</string>
 	<key>UISupportedInterfaceOrientations</key>

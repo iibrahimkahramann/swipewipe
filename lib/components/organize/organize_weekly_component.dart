@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:swipewipe/config/theme/custom_theme.dart';
@@ -26,7 +27,7 @@ class OrganizeWeeklyComponent extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Weekly',
+            'Weekly'.tr(),
             style: CustomTheme.textTheme(context).bodyMedium,
           ),
           SizedBox(

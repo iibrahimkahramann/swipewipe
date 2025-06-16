@@ -1,0 +1,23 @@
+{
+    "Weekly": "주간",
+    "By Month": "월별",
+    "No albums found": "앨범을 찾을 수 없습니다",
+    "Albums": "앨범",
+    "Settings": "설정",
+    "Statistics": "통계",
+    "Privacy Policy": "개인정보 보호정책",
+    "Term of Use": "이용 약관",
+    "Rate Us": "평가하기",
+    "Loading": "불러오는 중",
+    "Error": "오류",
+    "Photo": "{} 사진",
+    "Photo Stored": "{} 사진 저장됨",
+    "Photo Deleted": "{} 사진 삭제됨",
+    "KB Deleted": "{} KB 삭제됨",
+    "Go Back": "뒤로 가기",
+    "All images processed": "모든 이미지가 처리되었습니다",
+    "Batch delete error occurred": "일괄 삭제 중 오류 발생",
+    "Bulk Delete (Trash)": "대량 삭제 (휴지통)",
+    "Keep": "보관",
+    "Delete": "삭제"
+}

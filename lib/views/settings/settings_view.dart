@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -25,7 +26,7 @@ class SettingsView extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Settings',
+              'Settings'.tr(),
               style: CustomTheme.textTheme(context).bodyMedium,
             ),
             SizedBox(
@@ -65,7 +66,7 @@ class SettingsView extends ConsumerWidget {
                         width: width * 0.03,
                       ),
                       Text(
-                        'Statistics',
+                        'Statistics'.tr(),
                         style: CustomTheme.textTheme(context).bodySmall,
                       ),
                     ],
@@ -80,7 +81,7 @@ class SettingsView extends ConsumerWidget {
               width: width,
               height: height,
               imagePath: 'assets/icons/privacy.png',
-              text: 'Privacy Policy',
+              text: 'Privacy Policy'.tr(),
               urlPath:
                   'https://sites.google.com/view/swipecleanup-privacy-policy/ana-sayfa',
             ),
@@ -91,7 +92,7 @@ class SettingsView extends ConsumerWidget {
               width: width,
               height: height,
               imagePath: 'assets/icons/terms.png',
-              text: 'Term Of Use',
+              text: 'Term Of Use'.tr(),
               urlPath:
                   'https://sites.google.com/view/swipecleanup-term-of-use/ana-sayfa',
             ),
@@ -121,7 +122,7 @@ class SettingsView extends ConsumerWidget {
                         width: width * 0.03,
                       ),
                       Text(
-                        'Rate Us',
+                        'Rate Us'.tr(),
                         style: CustomTheme.textTheme(context).bodySmall,
                       ),
                     ],

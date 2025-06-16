@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:photo_manager/photo_manager.dart';
@@ -34,16 +35,16 @@ class _AlbumsViewState extends ConsumerState<AlbumsView> {
           error: (e, _) => Center(child: Text("Hata: $e")),
           data: (albums) {
             if (albums.isEmpty) {
-              return const Center(child: Text("Hiç albüm bulunamadı"));
+              return Center(child: Text("No albums found".tr()));
             }
 
             return ListView.builder(
-              itemCount: albums.length + 1, // 1 fazladan item: başlık için
+              itemCount: albums.length + 1,
               itemBuilder: (context, index) {
                 if (index == 0) {
                   return Padding(
                     padding: EdgeInsets.only(),
-                    child: Text('Albums',
+                    child: Text('Albums'.tr(),
                         style: CustomTheme.textTheme(context).bodyMedium),
                   );
                 }
@@ -61,7 +62,7 @@ class _AlbumsViewState extends ConsumerState<AlbumsView> {
                     return AlbumsContainerComponent(
                       height: height,
                       width: width,
-                      title: 'Albums',
+                      title: 'Albums'.tr(),
                       albumsTitle: album.name,
                       albumsLeght: photoList.length.toString(),
                       photoList: photoList,

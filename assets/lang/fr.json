@@ -1,0 +1,23 @@
+{
+    "Weekly": "Hebdomadaire",
+    "By Month": "Par Mois",
+    "No albums found": "Aucun album trouvé",
+    "Albums": "Albums",
+    "Settings": "Paramètres",
+    "Statistics": "Statistiques",
+    "Privacy Policy": "Politique de Confidentialité",
+    "Term of Use": "Conditions d'Utilisation",
+    "Rate Us": "Évaluez-nous",
+    "Loading": "Chargement",
+    "Error": "Erreur",
+    "Photo": "{} Photo",
+    "Photo Stored": "{} Photo Enregistrée",
+    "Photo Deleted": "{} Photo Supprimée",
+    "KB Deleted": "{} Ko Supprimés",
+    "Go Back": "Retour",
+    "All images processed": "Toutes les images ont été traitées",
+    "Batch delete error occurred": "Une erreur s'est produite lors de la suppression en lot",
+    "Bulk Delete (Trash)": "Suppression en Masse (Corbeille)",
+    "Keep": "Garder",
+    "Delete": "Supprimer"
+}

@@ -1,0 +1,23 @@
+{
+    "Weekly": "Weekly",
+    "By Month": "By Month",
+    "No albums found": "No albums found",
+    "Albums": "Albums",
+    "Settings": "Settings",
+    "Statistics": "Statistics",
+    "Privacy Policy": "Privacy Policy",
+    "Term of Use": "Term of Use",
+    "Rate Us": "Rate Us",
+    "Loading": "Loading",
+    "Error": "Error",
+    "Photo": "{} Photo",
+    "Photo Stored": "{} Photo Stored",
+    "Photo Deleted": "{} Photo Deleted",
+    "KB Deleted": "{} KB Deleted",
+    "Go Back": "Go Back",
+    "All images processed": "All images processed",
+    "Batch delete error occurred": "Batch delete error occurred",
+    "Bulk Delete (Trash)": "Bulk Delete (Trash)",
+    "Keep": "Keep",
+    "Delete": "Delete"
+}

@@ -1,0 +1,23 @@
+{
+    "Weekly": "Еженедельно",
+    "By Month": "По месяцам",
+    "No albums found": "Альбомы не найдены",
+    "Albums": "Альбомы",
+    "Settings": "Настройки",
+    "Statistics": "Статистика",
+    "Privacy Policy": "Политика конфиденциальности",
+    "Term of Use": "Условия использования",
+    "Rate Us": "Оцените нас",
+    "Loading": "Загрузка",
+    "Error": "Ошибка",
+    "Photo": "{} Фото",
+    "Photo Stored": "{} Фото сохранено",
+    "Photo Deleted": "{} Фото удалено",
+    "KB Deleted": "{} КБ удалено",
+    "Go Back": "Назад",
+    "All images processed": "Все изображения обработаны",
+    "Batch delete error occurred": "Ошибка при массовом удалении",
+    "Bulk Delete (Trash)": "Массовое удаление (Корзина)",
+    "Keep": "Сохранить",
+    "Delete": "Удалить"
+}

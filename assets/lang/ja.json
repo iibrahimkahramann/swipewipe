@@ -1,0 +1,23 @@
+{
+    "Weekly": "週ごと",
+    "By Month": "月ごと",
+    "No albums found": "アルバムが見つかりません",
+    "Albums": "アルバム",
+    "Settings": "設定",
+    "Statistics": "統計",
+    "Privacy Policy": "プライバシーポリシー",
+    "Term of Use": "利用規約",
+    "Rate Us": "評価する",
+    "Loading": "読み込み中",
+    "Error": "エラー",
+    "Photo": "{} 写真",
+    "Photo Stored": "{} 写真を保存しました",
+    "Photo Deleted": "{} 写真を削除しました",
+    "KB Deleted": "{} KB 削除済み",
+    "Go Back": "戻る",
+    "All images processed": "すべての画像が処理されました",
+    "Batch delete error occurred": "一括削除中にエラーが発生しました",
+    "Bulk Delete (Trash)": "一括削除（ゴミ箱）",
+    "Keep": "保持",
+    "Delete": "削除"
+}

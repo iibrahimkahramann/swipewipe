@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -26,7 +27,7 @@ class _StatistiscViewState extends ConsumerState<StatistiscView> {
     return Scaffold(
       appBar: AppBar(
           title: Text(
-        'Statistisc',
+        'Statistisc'.tr(),
         style: CustomTheme.textTheme(context).bodyLarge,
       )),
       body: Padding(
@@ -52,17 +53,17 @@ class _StatistiscViewState extends ConsumerState<StatistiscView> {
               loading: () => DefaultStatistiscConainer(
                 width: width,
                 height: height,
-                title: 'Yükleniyor...',
+                title: tr('Loading'),
               ),
               error: (e, _) => DefaultStatistiscConainer(
                 width: width,
                 height: height,
-                title: 'Hata',
+                title: tr('Error'),
               ),
               data: (mediaList) => DefaultStatistiscConainer(
                 width: width,
                 height: height,
-                title: '${mediaList.length} Fotoğraf',
+                title: tr('Photo', args: ['${mediaList.length}']),
               ),
             ),
             SizedBox(
@@ -72,8 +73,9 @@ class _StatistiscViewState extends ConsumerState<StatistiscView> {
               width: width,
               height: height,
               title: stats.isLoading
-                  ? 'Yükleniyor...'
-                  : '${stats.value?.savedCount ?? 0} Fotoğraf Saklandı',
+                  ? tr('Loading')
+                  : tr('Photo Stored',
+                      args: ['${stats.value?.savedCount ?? 0}']),
             ),
             SizedBox(
               height: height * 0.01,
@@ -81,7 +83,8 @@ class _StatistiscViewState extends ConsumerState<StatistiscView> {
             DefaultStatistiscConainer(
               width: width,
               height: height,
-              title: '${stats.value?.deletedCount ?? 0} Fotoğraf Silindi',
+              title: tr('Photo Deleted',
+                  args: ['${stats.value?.deletedCount ?? 0}']),
             ),
             SizedBox(
               height: height * 0.01,
@@ -89,8 +92,10 @@ class _StatistiscViewState extends ConsumerState<StatistiscView> {
             DefaultStatistiscConainer(
               width: width,
               height: height,
-              title:
-                  '${((stats.value?.deletedTotalBytes ?? 0) / 1024).toStringAsFixed(1)} KB Kaydedildi',
+              title: tr('KB Deleted', args: [
+                ((stats.value?.deletedTotalBytes ?? 0) / 1024)
+                    .toStringAsFixed(1)
+              ]),
             ),
             SizedBox(
               height: height * 0.02,
@@ -113,7 +118,7 @@ class _StatistiscViewState extends ConsumerState<StatistiscView> {
                 ),
                 child: Center(
                   child: Text(
-                    'Geri Dön',
+                    'Go Back'.tr(),
                     style: CustomTheme.textTheme(context).bodyMedium?.copyWith(
                           color: CustomTheme.backgroundColor,
                           fontFamily: 'Poppins',

@@ -1,0 +1,23 @@
+{
+    "Weekly": "Haftalık",
+    "By Month": "Aylık",
+    "No albums found": "Albüm bulunamadı",
+    "Albums": "Albümler",
+    "Settings": "Ayarlar",
+    "Statistics": "İstatistikler",
+    "Privacy Policy": "Gizlilik Politikası",
+    "Term of Use": "Kullanım Şartları",
+    "Rate Us": "Bizi Değerlendir",
+    "Loading": "Yükleniyor",
+    "Error": "Hata",
+    "Photo": "{} Fotoğraf",
+    "Photo Stored": "{} Fotoğraf Kaydedildi",
+    "Photo Deleted": "{} Fotoğraf Silindi",
+    "KB Deleted": "{} KB Silindi",
+    "Go Back": "Geri Dön",
+    "All images processed": "Tüm görseller işlendi",
+    "Batch delete error occurred": "Toplu silme hatası oluştu",
+    "Bulk Delete (Trash)": "Toplu Sil (Çöp)",
+    "Keep": "Sakla",
+    "Delete": "Sil"
+}

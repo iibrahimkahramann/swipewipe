@@ -1,0 +1,23 @@
+{
+    "Weekly": "Wöchentlich",
+    "By Month": "Nach Monat",
+    "No albums found": "Keine Alben gefunden",
+    "Albums": "Alben",
+    "Settings": "Einstellungen",
+    "Statistics": "Statistiken",
+    "Privacy Policy": "Datenschutzrichtlinie",
+    "Term of Use": "Nutzungsbedingungen",
+    "Rate Us": "Bewerten Sie uns",
+    "Loading": "Wird geladen",
+    "Error": "Fehler",
+    "Photo": "{} Foto",
+    "Photo Stored": "{} Foto gespeichert",
+    "Photo Deleted": "{} Foto gelöscht",
+    "KB Deleted": "{} KB gelöscht",
+    "Go Back": "Zurück",
+    "All images processed": "Alle Bilder wurden verarbeitet",
+    "Batch delete error occurred": "Fehler beim Löschen in der Gruppe",
+    "Bulk Delete (Trash)": "Massenlöschung (Papierkorb)",
+    "Keep": "Behalten",
+    "Delete": "Löschen"
+}

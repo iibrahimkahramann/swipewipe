@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:photo_manager/photo_manager.dart';
@@ -74,7 +75,7 @@ class _SwipeImagePageState extends ConsumerState<SwipeImagePage> {
         )),
         body: Center(
             child: Text(
-          "Tüm görseller işlendi",
+          "All images processed".tr(),
           style: CustomTheme.textTheme(context).bodyMedium,
         )),
       );
@@ -105,12 +106,11 @@ class _SwipeImagePageState extends ConsumerState<SwipeImagePage> {
                       // ignore: non_constant_identifier_names
                       final __ = ref.refresh(monthlyMediaProvider);
                     } catch (_) {
-                      debugPrint('Toplu silme hatası oluştu');
+                      debugPrint('Batch delete error occurred'.tr());
                     }
                   },
-                  tooltip: 'Toplu Sil (Çöp Kutusu)',
+                  tooltip: 'Bulk Delete (Trash)'.tr(),
                 ),
-                // Badge tasarımı
                 Positioned(
                   right: size.width * 0.02,
                   top: size.height * 0.002,

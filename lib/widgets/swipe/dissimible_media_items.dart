@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:photo_manager/photo_manager.dart';
@@ -21,7 +22,6 @@ class DismissibleMediaItem extends ConsumerWidget {
       BuildContext context, WidgetRef ref, DismissDirection direction) async {
     ref.read(swipeImagesProvider.notifier).removeAt(index);
     if (direction == DismissDirection.endToStart) {
-      // Hem local hem global delete provider'a ekle
       ref.read(globalDeleteProvider.notifier).add(media);
       await ref
           .read(userGalleryStatsProvider.notifier)
@@ -39,13 +39,13 @@ class DismissibleMediaItem extends ConsumerWidget {
       background: swipeBackground(
         color: Colors.green.shade600,
         icon: Icons.archive_outlined,
-        label: "Sakla",
+        label: "Keep".tr(),
         alignment: Alignment.centerLeft,
       ),
       secondaryBackground: swipeBackground(
         color: Colors.red.shade600,
         icon: Icons.delete_outline,
-        label: "Sil",
+        label: "Delete".tr(),
         alignment: Alignment.centerRight,
       ),
       onDismissed: (direction) async =>

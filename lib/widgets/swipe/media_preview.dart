@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:swipewipe/widgets/swipe/video_player_widget.dart';
@@ -59,8 +60,8 @@ class MediaPreview extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _actionButton(context, 'Sakla', Colors.green),
-              _actionButton(context, 'Sil', Colors.red),
+              _actionButton(context, 'Keep'.tr(), Colors.green),
+              _actionButton(context, 'Delete'.tr(), Colors.red),
             ],
           )
         ],

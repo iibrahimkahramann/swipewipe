@@ -39,10 +39,12 @@ dependencies:
   flutter_snake_navigationbar: ^0.6.1
   flutter_slidable: ^4.0.0
   photo_manager: ^3.7.1
-  intl: ^0.20.2
+  intl: ^0.19.0
   video_player: ^2.10.0
   shared_preferences: ^2.5.3
   url_launcher: ^6.3.1
+  app_tracking_transparency: ^2.0.6+1
+  easy_localization: ^3.0.7+1
   
 
 dev_dependencies:
@@ -86,7 +88,7 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
-    # - assets/lang/
+    - assets/lang/
     
   fonts:
     - family: Poppins
