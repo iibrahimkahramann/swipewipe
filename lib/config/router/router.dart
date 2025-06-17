@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:swipewipe/views/albums/albums_view.dart';
+import 'package:swipewipe/views/onboarding/onboarding_three.dart';
+import 'package:swipewipe/views/onboarding/onboarding_two_view.dart';
+import 'package:swipewipe/views/onboarding/onboarding_view.dart';
 import 'package:swipewipe/views/organize/organize_view.dart';
 import 'package:swipewipe/views/settings/settings_view.dart';
 import 'package:swipewipe/views/splash/splash_view.dart';
@@ -37,6 +40,21 @@ final router = GoRouter(
     GoRoute(
       path: '/splash',
       pageBuilder: (context, state) => NoTransitionPage(child: SplashView()),
+    ),
+    GoRoute(
+      path: '/onboarding',
+      pageBuilder: (context, state) =>
+          fadeScalePage(child: OnboardingView(), state: state),
+    ),
+    GoRoute(
+      path: '/onboarding-two',
+      pageBuilder: (context, state) =>
+          fadeScalePage(child: OnboardingTwoView(), state: state),
+    ),
+    GoRoute(
+      path: '/onboarding-three',
+      pageBuilder: (context, state) =>
+          fadeScalePage(child: OnboardingThree(), state: state),
     ),
     GoRoute(
       path: '/organize',

@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:swipewipe/components/defaut_white_button.dart';
 import 'package:swipewipe/components/settings/default_statistics_container.dart';
 import 'package:swipewipe/config/theme/custom_theme.dart';
 import 'package:swipewipe/providers/swipe/swipe_provider.dart';
@@ -100,34 +101,13 @@ class _StatistiscViewState extends ConsumerState<StatistiscView> {
             SizedBox(
               height: height * 0.02,
             ),
-            GestureDetector(
+            DefaultWhiteButton(
+              height: height,
+              width: width,
               onTap: () {
-                context.go('/settings');
+                context.go("/statistics");
               },
-              child: Container(
-                height: height * 0.1,
-                width: width,
-                decoration: BoxDecoration(
-                  color: CustomTheme.accentColor,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.elliptical(40, 40),
-                    topRight: Radius.elliptical(40, 40),
-                    bottomLeft: Radius.elliptical(30, 30),
-                    bottomRight: Radius.elliptical(30, 30),
-                  ),
-                ),
-                child: Center(
-                  child: Text(
-                    'Go Back'.tr(),
-                    style: CustomTheme.textTheme(context).bodyMedium?.copyWith(
-                          color: CustomTheme.backgroundColor,
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.bold,
-                          fontStyle: FontStyle.italic,
-                        ),
-                  ),
-                ),
-              ),
+              title: 'Go Back'.tr(),
             ),
           ],
         ),

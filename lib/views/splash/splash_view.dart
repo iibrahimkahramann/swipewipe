@@ -13,13 +13,13 @@ class SplashView extends StatelessWidget {
     Future.delayed(
       const Duration(seconds: 2),
       () async {
-        // final prefs = await SharedPreferences.getInstance();
-        // final onboardingSeen = prefs.getBool('onboardingSeen') ?? false;
-        // if (onboardingSeen) {
-        context.go('/organize');
-        // } else {
-        //   context.go('/onboarding');
-        // }
+        final prefs = await SharedPreferences.getInstance();
+        final onboardingSeen = prefs.getBool('onboardingSeen') ?? false;
+        if (onboardingSeen) {
+          context.go('/onboarding');
+        } else {
+          context.go('/onboarding');
+        }
       },
     );
 
