@@ -29,5 +29,11 @@
     "Reclaim the Landfill!": "¡Recupera el Vertedero!",
     "You can delete unnecessary photos and track them in the statistics.": "Puedes eliminar fotos innecesarias y rastrear su eliminación en las estadísticas.",
     "Get Started": "Comenzar",
-    "Continue": "Continuar"
+    "Continue": "Continuar",
+    "Deleted": "Eliminado",
+    "Successfully Deleted Selected Photos": "Fotos seleccionadas eliminadas con éxito",
+    "OK": "OK",
+    "You cannot use without gallery permission": "No puedes usar sin permiso de galería",
+    "Give Permission": "Dar Permiso",
+    "App won't work without granting full access.": "La aplicación no funcionará sin otorgar acceso completo."
 }

@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:photo_manager/photo_manager.dart';
@@ -7,6 +8,7 @@ import 'package:swipewipe/providers/swipe/swipe_provider.dart';
 import 'package:swipewipe/widgets/swipe/dissimible_media_items.dart';
 import 'package:swipewipe/providers/gallery/albums_media_provider.dart';
 import 'package:swipewipe/providers/gallery/monthly_media_providers.dart';
+import 'package:swipewipe/widgets/swipe/delete_alert_widget.dart';
 
 class SwipeImagePage extends ConsumerStatefulWidget {
   final List<AssetEntity> mediaList;
@@ -98,13 +100,27 @@ class _SwipeImagePageState extends ConsumerState<SwipeImagePage> {
                   onPressed: () async {
                     final globalDeleteList = ref.read(globalDeleteProvider);
                     if (globalDeleteList.isEmpty) return;
+                    int totalDeletedBytes = 0;
                     try {
+                      for (final asset in globalDeleteList) {
+                        final file = await asset.file;
+                        totalDeletedBytes += await file?.length() ?? 0;
+                      }
                       await PhotoManager.editor.deleteWithIds(
                           globalDeleteList.map((e) => e.id).toList());
                       ref.read(globalDeleteProvider.notifier).clear();
                       final _ = ref.refresh(albumListProvider);
-                      // ignore: non_constant_identifier_names
                       final __ = ref.refresh(monthlyMediaProvider);
+
+                      if (context.mounted) {
+                        showCupertinoDialog(
+                          context: context,
+                          builder: (context) {
+                            return DeleteAlertWidget(
+                                deletedKB: totalDeletedBytes / 1024);
+                          },
+                        );
+                      }
                     } catch (_) {
                       debugPrint('Batch delete error occurred'.tr());
                     }

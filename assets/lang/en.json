@@ -29,5 +29,11 @@
     "Reclaim the Landfill!": "Reclaim the Landfill!",
     "You can delete unnecessary photos and track them in the statistics.": "You can delete unnecessary photos and track them in the statistics.",
     "Get Started": "Get Started",
-    "Continue": "Continue"
+    "Continue": "Continue",
+    "Deleted": "Deleted",
+    "Successfully Deleted Selected Photos": "Successfully Deleted Selected Photos",
+    "OK": "OK",
+    "You cannot use without gallery permission": "You cannot use without gallery permission",
+    "Give Permission": "Give Permission",
+    "App won t work without granting full access.": "App won't work without granting full access."
 }

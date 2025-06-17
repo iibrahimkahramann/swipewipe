@@ -29,5 +29,11 @@
     "Reclaim the Landfill!": "Rückgewinnung der Deponie!",
     "You can delete unnecessary photos and track them in the statistics.": "Sie können unnötige Fotos löschen und sie in den Statistiken verfolgen.",
     "Get Started": "Loslegen",
-    "Continue": "Fortsetzen"
+    "Continue": "Fortsetzen",
+    "Deleted": "Gelöscht",
+    "Successfully Deleted Selected Photos": "Ausgewählte Fotos erfolgreich gelöscht",
+    "OK": "OK",
+    "You cannot use without gallery permission": "Sie können ohne Galerieberechtigung nicht verwenden",
+    "Give Permission": "Berechtigung erteilen",
+    "App won t work without granting full access.": "Die App funktioniert nicht, ohne vollständigen Zugriff zu gewähren."
 }

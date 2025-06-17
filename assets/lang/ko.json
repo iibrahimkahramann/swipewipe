@@ -29,5 +29,11 @@
     "Reclaim the Landfill!": "쓰레기장을 되찾으세요!",
     "You can delete unnecessary photos and track them in the statistics.": "불필요한 사진을 삭제하고 통계에서 추적할 수 있습니다.",
     "Get Started": "시작하기",
-    "Continue": "계속하기"
+    "Continue": "계속하기",
+    "Deleted": "삭제됨",
+    "Successfully Deleted Selected Photos": "선택한 사진이 성공적으로 삭제되었습니다",
+    "OK": "확인",
+    "You cannot use without gallery permission": "갤러리 권한 없이 사용할 수 없습니다",
+    "Give Permission": "권한 부여",
+    "App won t work without granting full access.": "전체 접근 권한을 부여하지 않으면 앱이 작동하지 않습니다."
 }

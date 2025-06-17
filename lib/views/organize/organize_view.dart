@@ -39,7 +39,17 @@ class _OrganizeViewState extends ConsumerState<OrganizeView> {
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, _) => Text('Hata: $e'),
               data: (weeklyGrouped) {
-                if (weeklyGrouped.isEmpty) return const SizedBox.shrink();
+                if (weeklyGrouped.isEmpty) {
+                  return Center(
+                    child: Column(
+                      children: [
+                        Text("You cannot use without gallery permission".tr(),
+                            style: CustomTheme.textTheme(context).bodySmall),
+                        SizedBox(height: height * 0.01),
+                      ],
+                    ),
+                  );
+                }
 
                 final sortedKeys = weeklyGrouped.keys.toList()
                   ..sort((a, b) => b.compareTo(a));

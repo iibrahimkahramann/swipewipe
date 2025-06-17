@@ -16,7 +16,7 @@ class SplashView extends StatelessWidget {
         final prefs = await SharedPreferences.getInstance();
         final onboardingSeen = prefs.getBool('onboardingSeen') ?? false;
         if (onboardingSeen) {
-          context.go('/onboarding');
+          context.go('/organize');
         } else {
           context.go('/onboarding');
         }

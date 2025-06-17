@@ -45,6 +45,10 @@ dependencies:
   url_launcher: ^6.3.1
   app_tracking_transparency: ^2.0.6+1
   easy_localization: ^3.0.7+1
+  firebase_analytics: ^11.5.0
+  firebase_core: ^3.14.0
+  purchases_flutter: ^8.10.2
+  purchases_ui_flutter: ^8.10.2
   
 
 dev_dependencies:

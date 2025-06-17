@@ -33,7 +33,7 @@ class OnboardingView extends StatelessWidget {
             DefaultWhiteButton(
               height: height,
               width: width * 0.99,
-              onTap: () {
+              onTap: () async {
                 context.go('/onboarding-two');
               },
               title: 'Continue'.tr(),

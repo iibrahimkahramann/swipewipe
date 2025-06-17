@@ -29,5 +29,11 @@
     "Reclaim the Landfill!": "Верните свалку!",
     "You can delete unnecessary photos and track them in the statistics.": "Вы можете удалять ненужные фотографии и отслеживать их в статистике.",
     "Get Started": "Начать",
-    "Continue": "Продолжить"
+    "Continue": "Продолжить",
+    "Deleted": "Удалено",
+    "Successfully Deleted Selected Photos": "Выбранные фотографии успешно удалены",
+    "OK": "OK",
+    "You cannot use without gallery permission": "Вы не можете использовать без разрешения на доступ к галерее",
+    "Give Permission": "Предоставить разрешение",
+    "App won t work without granting full access.": "Приложение не будет работать без предоставления полного доступа."
 }

@@ -29,5 +29,11 @@
     "Reclaim the Landfill!": "埋立地を取り戻そう！",
     "You can delete unnecessary photos and track them in the statistics.": "不要な写真を削除し、統計で追跡できます。",
     "Get Started": "始める",
-    "Continue": "続ける"
+    "Continue": "続ける",
+    "Deleted": "削除済み",
+    "Successfully Deleted Selected Photos": "選択した写真を正常に削除しました",
+    "OK": "OK",
+    "You cannot use without gallery permission": "ギャラリーの許可なしでは使用できません",
+    "Give Permission": "許可を与える",
+    "App won t work without granting full access.": "完全なアクセスを許可しないとアプリは動作しません。"
 }

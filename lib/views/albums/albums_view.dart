@@ -35,7 +35,13 @@ class _AlbumsViewState extends ConsumerState<AlbumsView> {
           error: (e, _) => Center(child: Text("Hata: $e")),
           data: (albums) {
             if (albums.isEmpty) {
-              return Center(child: Text("No albums found".tr()));
+              return Center(
+                child: Text(
+                  "You cannot use without gallery permission".tr(),
+                  style: CustomTheme.textTheme(context).bodySmall,
+                  textAlign: TextAlign.center,
+                ),
+              );
             }
 
             return ListView.builder(

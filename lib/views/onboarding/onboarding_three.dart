@@ -1,6 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:photo_manager/photo_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swipewipe/components/defaut_white_button.dart';
 import 'package:swipewipe/components/onboarding/onboarding_component.dart';
@@ -24,10 +26,8 @@ class OnboardingThree extends StatelessWidget {
               child: OnboardingComponent(
                 height: height,
                 width: width,
-                title: 'Reclaim the Landfill!'.tr(),
-                subtitle:
-                    'You can delete unnecessary photos and track them in the statistics.'
-                        .tr(),
+                title: 'Give Permission'.tr(),
+                subtitle: 'App won t work without granting full access.'.tr(),
                 imagePath: 'assets/images/onboarding_stats.png',
               ),
             ),
@@ -37,6 +37,27 @@ class OnboardingThree extends StatelessWidget {
               onTap: () async {
                 final prefs = await SharedPreferences.getInstance();
                 await prefs.setBool('onboardingSeen', true);
+                final permission = await PhotoManager.requestPermissionExtend();
+                if (!permission.isAuth) {
+                  if (context.mounted) {
+                    showCupertinoDialog(
+                      context: context,
+                      builder: (context) => CupertinoAlertDialog(
+                        title: Text('Gallery Permission Required'.tr()),
+                        content: Text(
+                            'Please allow gallery access to continue.'.tr()),
+                        actions: [
+                          CupertinoDialogAction(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: Text('OK'.tr()),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                  context.go('/organize');
+                  return;
+                }
                 context.go('/organize');
               },
               title: 'Get Started'.tr(),

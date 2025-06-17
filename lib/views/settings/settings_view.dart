@@ -6,7 +6,9 @@ import 'package:swipewipe/components/settings/app_store_component.dart';
 import 'package:swipewipe/components/settings/default_setting_container.dart';
 import 'package:swipewipe/config/bar/appbar.dart';
 import 'package:swipewipe/config/bar/navbar.dart';
+import 'package:swipewipe/config/functions/rc_paywall.dart';
 import 'package:swipewipe/config/theme/custom_theme.dart';
+import 'package:swipewipe/providers/premium/premium_provider.dart';
 
 class SettingsView extends ConsumerWidget {
   const SettingsView({super.key});
@@ -15,6 +17,8 @@ class SettingsView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
+    final isPremium = ref.watch(isPremiumProvider);
+
     return Scaffold(
       appBar: CustomAppBar(),
       body: Padding(
@@ -32,32 +36,38 @@ class SettingsView extends ConsumerWidget {
             SizedBox(
               height: height * 0.01,
             ),
-            Container(
-              width: width,
-              height: height * 0.065,
-              decoration: BoxDecoration(
-                color: CustomTheme.secondaryColor,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Padding(
-                padding: EdgeInsets.only(left: width * 0.05),
-                child: Row(
-                  children: [
-                    Image.asset(
-                      'assets/icons/pro.png',
-                      width: width * 0.06,
+            if (!isPremium)
+              GestureDetector(
+                onTap: () async {
+                  await RevenueCatService.showPaywallIfNeeded();
+                },
+                child: Container(
+                  width: width,
+                  height: height * 0.065,
+                  decoration: BoxDecoration(
+                    color: CustomTheme.secondaryColor,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.only(left: width * 0.05),
+                    child: Row(
+                      children: [
+                        Image.asset(
+                          'assets/icons/pro.png',
+                          width: width * 0.06,
+                        ),
+                        SizedBox(
+                          width: width * 0.03,
+                        ),
+                        Text(
+                          'Get Premium'.tr(),
+                          style: CustomTheme.textTheme(context).bodySmall,
+                        ),
+                      ],
                     ),
-                    SizedBox(
-                      width: width * 0.03,
-                    ),
-                    Text(
-                      'Get Premium'.tr(),
-                      style: CustomTheme.textTheme(context).bodySmall,
-                    ),
-                  ],
+                  ),
                 ),
               ),
-            ),
             SizedBox(
               height: height * 0.01,
             ),

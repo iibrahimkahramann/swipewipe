@@ -29,5 +29,11 @@
     "Reclaim the Landfill!": "Çöplüğü Geri Kazan!",
     "You can delete unnecessary photos and track them in the statistics.": "Gereksiz fotoğrafları silebilir ve istatistiklerde takip edebilirsin.",
     "Get Started": "Başla",
-    "Continue": "Devam Et"
+    "Continue": "Devam Et",
+    "Deleted": "Silindi",
+    "Successfully Deleted Selected Photos": "Seçilen Fotoğraflar Başarıyla Silindi",
+    "OK": "Tamam",
+    "You cannot use without gallery permission": "Galeri izni olmadan kullanamazsınız",
+    "Give Permission": "İzin Ver",
+    "App won t work without granting full access.": "Tam erişim izni verilmeden uygulama çalışmayacak."
 }
