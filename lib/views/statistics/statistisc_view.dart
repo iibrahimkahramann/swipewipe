@@ -105,7 +105,7 @@ class _StatistiscViewState extends ConsumerState<StatistiscView> {
               height: height,
               width: width,
               onTap: () {
-                context.go("/statistics");
+                context.go("/settings");
               },
               title: 'Go Back'.tr(),
             ),
