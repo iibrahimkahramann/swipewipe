@@ -106,20 +106,32 @@ class _SwipeImagePageState extends ConsumerState<SwipeImagePage> {
                         final file = await asset.file;
                         totalDeletedBytes += await file?.length() ?? 0;
                       }
-                      await PhotoManager.editor.deleteWithIds(
-                          globalDeleteList.map((e) => e.id).toList());
-                      ref.read(globalDeleteProvider.notifier).clear();
-                      final _ = ref.refresh(albumListProvider);
-                      final __ = ref.refresh(monthlyMediaProvider);
-
-                      if (context.mounted) {
-                        showCupertinoDialog(
-                          context: context,
-                          builder: (context) {
-                            return DeleteAlertWidget(
-                                deletedKB: totalDeletedBytes / 1024);
-                          },
-                        );
+                      // Önce izin kontrolü
+                      final permission =
+                          await PhotoManager.requestPermissionExtend();
+                      if (!permission.isAuth) {
+                        debugPrint('Kullanıcı galeri silme izni vermedi');
+                        return;
+                      }
+                      final deleted = await PhotoManager.editor.deleteWithIds(
+                        globalDeleteList.map((e) => e.id).toList(),
+                      );
+                      if (deleted.isNotEmpty) {
+                        ref.read(globalDeleteProvider.notifier).clear();
+                        final _ = ref.refresh(albumListProvider);
+                        final __ = ref.refresh(monthlyMediaProvider);
+                        if (context.mounted) {
+                          showCupertinoDialog(
+                            context: context,
+                            builder: (context) {
+                              return DeleteAlertWidget(
+                                  deletedKB: totalDeletedBytes / 1024);
+                            },
+                          );
+                        }
+                      } else {
+                        debugPrint(
+                            'Silme işlemi başarısız veya kullanıcı izin vermedi.');
                       }
                     } catch (_) {
                       debugPrint('Batch delete error occurred'.tr());
