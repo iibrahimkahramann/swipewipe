@@ -3,12 +3,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swipewipe/config/theme/custom_theme.dart';
 import 'package:swipewipe/providers/swipe/swipe_provider.dart';
 import 'package:swipewipe/widgets/swipe/dissimible_media_items.dart';
 import 'package:swipewipe/providers/gallery/albums_media_provider.dart';
 import 'package:swipewipe/providers/gallery/monthly_media_providers.dart';
 import 'package:swipewipe/widgets/swipe/delete_alert_widget.dart';
+import 'swipe_complete_button.dart';
 
 class SwipeImagePage extends ConsumerStatefulWidget {
   final List<AssetEntity> mediaList;
@@ -28,15 +30,18 @@ class _SwipeImagePageState extends ConsumerState<SwipeImagePage> {
   late final PageController _pageController;
   List<int> _fileSizes = [];
   bool _loadingSizes = true;
+  bool _listCompleted = false;
+  bool _buttonPressed = false;
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: widget.initialIndex);
     _calculateFileSizes();
+    _checkListCompleted();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final currentImages = ref.read(swipeImagesProvider);
-      if (currentImages.isEmpty) {
+      if (currentImages.isEmpty && !_listCompleted) {
         ref.read(swipeImagesProvider.notifier).setImages(widget.mediaList);
         ref.read(swipeCurrentIndexProvider.notifier).state =
             widget.initialIndex;
@@ -57,6 +62,31 @@ class _SwipeImagePageState extends ConsumerState<SwipeImagePage> {
     });
   }
 
+  Future<void> _checkListCompleted() async {
+    final prefs = await SharedPreferences.getInstance();
+    final key = _getListKey();
+    setState(() {
+      _listCompleted = prefs.getBool(key) ?? false;
+      _buttonPressed = !(_listCompleted);
+    });
+  }
+
+  Future<void> _setListCompleted(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    final key = _getListKey();
+    await prefs.setBool(key, value);
+    setState(() {
+      _listCompleted = value;
+      _buttonPressed = !value;
+    });
+  }
+
+  String _getListKey() {
+    // Her listeyi benzersiz tanımlamak için mediaList'in ilk ve son id'sini kullanıyoruz
+    if (widget.mediaList.isEmpty) return 'swipe_list_completed_empty';
+    return 'swipe_list_completed_${widget.mediaList.first.id}_${widget.mediaList.last.id}';
+  }
+
   @override
   Widget build(BuildContext context) {
     final images = ref.watch(swipeImagesProvider);
@@ -68,7 +98,44 @@ class _SwipeImagePageState extends ConsumerState<SwipeImagePage> {
       );
     }
 
+    if (_listCompleted && !_buttonPressed) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'Swipewipe',
+            style: CustomTheme.textTheme(context).bodyLarge,
+          ),
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('Liste tamamlandı!'),
+              const SizedBox(height: 16),
+              SwipeCompleteButton(
+                onPressed: () async {
+                  await _setListCompleted(false);
+                  ref
+                      .read(swipeImagesProvider.notifier)
+                      .setImages(widget.mediaList);
+                  ref.read(swipeCurrentIndexProvider.notifier).state = 0;
+                  ref.read(swipePendingDeleteProvider.notifier).clear();
+                  setState(() {
+                    _buttonPressed = true;
+                  });
+                },
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     if (images.isEmpty) {
+      // Liste bittiğinde tamamlandı olarak işaretle
+      if (!_listCompleted) {
+        _setListCompleted(true);
+      }
       return Scaffold(
         appBar: AppBar(
             title: Text(

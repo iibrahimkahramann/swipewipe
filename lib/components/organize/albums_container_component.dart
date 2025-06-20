@@ -4,6 +4,7 @@ import 'package:photo_manager/photo_manager.dart';
 import 'package:swipewipe/config/theme/custom_theme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:swipewipe/providers/swipe/swipe_provider.dart';
+import 'monthly_complete_helper.dart';
 
 class AlbumsContainerComponent extends ConsumerWidget {
   final double height;
@@ -25,49 +26,60 @@ class AlbumsContainerComponent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        SizedBox(height: height * 0.01),
-        GestureDetector(
-          onTap: () {
-            ref.read(swipeImagesProvider.notifier).setImages(photoList);
-            ref.read(swipeCurrentIndexProvider.notifier).state = 0;
-            ref.read(swipePendingDeleteProvider.notifier).clear();
-            context.push(
-              '/swipe',
-              extra: {
-                'mediaList': photoList,
-                'initialIndex': 0,
+    return FutureBuilder<bool>(
+      future: MonthlyCompleteHelper.isListCompleted(photoList),
+      builder: (context, snapshot) {
+        final isCompleted = snapshot.data ?? false;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(height: height * 0.01),
+            GestureDetector(
+              onTap: () {
+                ref.read(swipeImagesProvider.notifier).setImages(photoList);
+                ref.read(swipeCurrentIndexProvider.notifier).state = 0;
+                ref.read(swipePendingDeleteProvider.notifier).clear();
+                context.push(
+                  '/swipe',
+                  extra: {
+                    'mediaList': photoList,
+                    'initialIndex': 0,
+                  },
+                );
               },
-            );
-          },
-          child: Container(
-            width: width,
-            height: height * 0.07,
-            decoration: BoxDecoration(
-              color: CustomTheme.secondaryColor,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: width * 0.04),
-              child: Row(
-                children: [
-                  Text(
-                    albumsTitle,
-                    style: CustomTheme.textTheme(context).bodySmall,
+              child: Container(
+                width: width,
+                height: height * 0.07,
+                decoration: BoxDecoration(
+                  color: CustomTheme.secondaryColor,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: width * 0.04),
+                  child: Row(
+                    children: [
+                      Text(
+                        albumsTitle,
+                        style: CustomTheme.textTheme(context).bodySmall,
+                      ),
+                      const Spacer(),
+                      if (isCompleted) ...[
+                        const Icon(Icons.check_circle,
+                            color: Colors.green, size: 20),
+                      ] else ...[
+                        Text(
+                          albumsLeght,
+                          style: CustomTheme.textTheme(context).bodySmall,
+                        ),
+                      ],
+                    ],
                   ),
-                  const Spacer(),
-                  Text(
-                    albumsLeght,
-                    style: CustomTheme.textTheme(context).bodySmall,
-                  ),
-                ],
+                ),
               ),
-            ),
-          ),
-        )
-      ],
+            )
+          ],
+        );
+      },
     );
   }
 }
