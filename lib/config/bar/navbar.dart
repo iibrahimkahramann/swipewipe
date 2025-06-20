@@ -22,15 +22,15 @@ class CustomNavBar extends StatelessWidget {
         borderRadius: BorderRadius.circular(30),
       ),
       padding: EdgeInsets.symmetric(
-        horizontal: width * 0.2,
+        horizontal: width * 0.1,
       ),
       snakeViewColor: CustomTheme.boldColor,
       selectedItemColor: SnakeShape.circle == SnakeShape.indicator
           ? CustomTheme.backgroundColor
           : null,
       unselectedItemColor: CustomTheme.accentColor,
-      showUnselectedLabels: true,
-      showSelectedLabels: true,
+      showUnselectedLabels: false,
+      showSelectedLabels: false,
       backgroundColor: CustomTheme.backgroundColor,
       currentIndex: _calculateSelectedIndex(currentLocation),
       onTap: (index) => _onItemTapped(index, context),

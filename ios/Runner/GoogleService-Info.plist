@@ -3,17 +3,17 @@
 <plist version="1.0">
 <dict>
 	<key>API_KEY</key>
-	<string>AIzaSyBjyue6VlbrUENKpUGKkv-KkqKgMeRAzMk</string>
+	<string>AIzaSyD82ggcpCYyZj5zNI7AQbW0Dmz1Acs7JYs</string>
 	<key>GCM_SENDER_ID</key>
-	<string>255481171034</string>
+	<string>360435782985</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.cleanup.swipewipe</string>
 	<key>PROJECT_ID</key>
-	<string>swipewipe-e1869</string>
+	<string>off-player</string>
 	<key>STORAGE_BUCKET</key>
-	<string>swipewipe-e1869.firebasestorage.app</string>
+	<string>off-player.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:255481171034:ios:bb08e25a16b60549a11c63</string>
+	<string>1:360435782985:ios:85e69b5da95b1af638b698</string>
 </dict>
 </plist>

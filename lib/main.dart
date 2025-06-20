@@ -1,16 +1,22 @@
 import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:swipewipe/config/functions/app_trancking.dart';
 import 'package:swipewipe/config/router/router.dart';
 import 'package:swipewipe/config/theme/custom_theme.dart';
+import 'package:swipewipe/firebase_options.dart';
 import 'package:swipewipe/providers/premium/premium_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   Future<void> _configureRcsdk() async {
     print("Configure Rcsdk *************");

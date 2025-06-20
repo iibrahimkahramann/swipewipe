@@ -22,7 +22,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
               child: Row(
                 children: [
                   Text(
-                    'Swipewipe',
+                    'Swipe Cleaner',
                     style: CustomTheme.textTheme(context).bodyLarge,
                   ),
                   Spacer(),

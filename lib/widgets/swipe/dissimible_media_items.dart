@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:swipewipe/config/functions/firebase_analytics.dart';
 import 'package:swipewipe/widgets/swipe/swipe_background_widget.dart';
 import 'package:swipewipe/providers/swipe/swipe_provider.dart';
 import 'package:swipewipe/widgets/swipe/media_preview.dart';
@@ -56,6 +57,10 @@ class DismissibleMediaItem extends ConsumerWidget {
       if (_limitReached) {
         print('Paywall açılıyor! (limit aşıldı)');
         await RevenueCatService.showPaywallIfNeeded();
+        AnalyticsService.analytics.logEvent(
+          name: 'swipe_limit_reached',
+          parameters: {'swipeCount': _swipeCount},
+        );
         return;
       }
       _swipeCount++;

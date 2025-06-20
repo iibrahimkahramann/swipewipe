@@ -11,7 +11,7 @@ import 'package:swipewipe/widgets/swipe/dissimible_media_items.dart';
 import 'package:swipewipe/providers/gallery/albums_media_provider.dart';
 import 'package:swipewipe/providers/gallery/monthly_media_providers.dart';
 import 'package:swipewipe/widgets/swipe/delete_alert_widget.dart';
-import 'swipe_complete_button.dart';
+import '../../components/organize/swipe_complete_button.dart';
 
 class SwipeImagePage extends ConsumerStatefulWidget {
   final List<AssetEntity> mediaList;
