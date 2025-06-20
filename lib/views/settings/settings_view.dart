@@ -127,6 +127,17 @@ class SettingsView extends ConsumerWidget {
             SizedBox(
               height: height * 0.01,
             ),
+            AppStoreComponent(
+              width: width,
+              height: height,
+              urlPath:
+                  'https://apps.apple.com/app/6747386188?action=write-review',
+              imagePath: 'assets/icons/rate_us.png',
+              title: 'Rate Us'.tr(),
+            ),
+            SizedBox(
+              height: height * 0.01,
+            ),
             Text(
               'Our Apps'.tr(),
               style: CustomTheme.textTheme(context).bodyMedium,

@@ -35,5 +35,7 @@
     "OK": "OK",
     "You cannot use without gallery permission": "ギャラリーの許可なしでは使用できません",
     "Give Permission": "許可を与える",
-    "App won t work without granting full access.": "完全なアクセスを許可しないとアプリは動作しません。"
+    "App won t work without granting full access.": "完全なアクセスを許可しないとアプリは動作しません。",
+    "Review Again": "再度確認",
+    "Swipe List Completed": "スワイプリストが完了しました"
 }

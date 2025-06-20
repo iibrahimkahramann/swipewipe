@@ -35,5 +35,7 @@
     "OK": "확인",
     "You cannot use without gallery permission": "갤러리 권한 없이 사용할 수 없습니다",
     "Give Permission": "권한 부여",
-    "App won t work without granting full access.": "전체 접근 권한을 부여하지 않으면 앱이 작동하지 않습니다."
+    "App won t work without granting full access.": "전체 접근 권한을 부여하지 않으면 앱이 작동하지 않습니다.",
+    "Review Again": "다시 검토",
+    "Swipe List Completed": "스와이프 목록 완료"
 }

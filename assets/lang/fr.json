@@ -35,5 +35,7 @@
     "OK": "OK",
     "You cannot use without gallery permission": "Vous ne pouvez pas utiliser sans autorisation de la galerie",
     "Give Permission": "Donner la Permission",
-    "App won t work without granting full access.": "L'application ne fonctionnera pas sans accorder un accès complet."
+    "App won t work without granting full access.": "L'application ne fonctionnera pas sans accorder un accès complet.",
+    "Review Again": "Revoir à Nouveau",
+    "Swipe List Completed": "Liste de Glissement Terminée"
 }

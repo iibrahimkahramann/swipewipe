@@ -35,5 +35,7 @@
     "OK": "Tamam",
     "You cannot use without gallery permission": "Galeri izni olmadan kullanamazsınız",
     "Give Permission": "İzin Ver",
-    "App won t work without granting full access.": "Tam erişim izni verilmeden uygulama çalışmayacak."
+    "App won t work without granting full access.": "Tam erişim izni verilmeden uygulama çalışmayacak.",
+    "Review Again": "Tekrar Gözden Geçir",
+    "Swipe List Completed": "Kaydırma Listesi Tamamlandı"
 }

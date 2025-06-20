@@ -33,7 +33,7 @@ class AppStoreComponent extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
         ),
         child: Padding(
-          padding: EdgeInsets.only(left: width * 0.05),
+          padding: EdgeInsets.only(left: width * 0.04),
           child: Row(
             children: [
               Image.asset(
@@ -41,7 +41,7 @@ class AppStoreComponent extends StatelessWidget {
                 width: width * 0.09,
               ),
               SizedBox(
-                width: width * 0.03,
+                width: width * 0.02,
               ),
               Text(
                 title.tr(),
