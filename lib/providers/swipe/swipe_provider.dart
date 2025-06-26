@@ -109,40 +109,34 @@ class UserGalleryStatsNotifier extends AsyncNotifier<UserGalleryStats> {
   }
 }
 
-class GlobalDeleteNotifier extends StateNotifier<List<AssetEntity>> {
-  GlobalDeleteNotifier() : super([]);
+class DeleteMapNotifier extends StateNotifier<Map<String, Set<AssetEntity>>> {
+  DeleteMapNotifier() : super({});
 
-  void add(AssetEntity asset) {
-    if (!state.any((e) => e.id == asset.id)) {
-      state = [...state, asset];
-    }
+  void add(String listKey, AssetEntity entity) {
+    final current = state[listKey] ?? <AssetEntity>{};
+    state = {
+      ...state,
+      listKey: {...current, entity},
+    };
   }
 
-  void remove(AssetEntity asset) {
-    state = state.where((e) => e.id != asset.id).toList();
+  void remove(String listKey, AssetEntity entity) {
+    final current = state[listKey] ?? <AssetEntity>{};
+    current.remove(entity);
+    state = {
+      ...state,
+      listKey: {...current},
+    };
   }
 
-  void clear() {
-    state = [];
-  }
-}
-
-class SavedNotifier extends StateNotifier<List<AssetEntity>> {
-  SavedNotifier() : super([]);
-
-  void add(AssetEntity asset) {
-    if (!state.any((e) => e.id == asset.id)) {
-      state = [...state, asset];
-    }
+  void clear(String listKey) {
+    state = {
+      ...state,
+      listKey: <AssetEntity>{},
+    };
   }
 
-  void remove(AssetEntity asset) {
-    state = state.where((e) => e.id != asset.id).toList();
-  }
-
-  void clear() {
-    state = [];
-  }
+  Set<AssetEntity> getList(String listKey) => state[listKey] ?? <AssetEntity>{};
 }
 
 final swipeImagesProvider =
@@ -161,12 +155,10 @@ final userGalleryStatsProvider =
     AsyncNotifierProvider<UserGalleryStatsNotifier, UserGalleryStats>(
         UserGalleryStatsNotifier.new);
 
-final globalDeleteProvider =
-    StateNotifierProvider<GlobalDeleteNotifier, List<AssetEntity>>((ref) {
-  return GlobalDeleteNotifier();
-});
+final deleteMapProvider =
+    StateNotifierProvider<DeleteMapNotifier, Map<String, Set<AssetEntity>>>(
+  (ref) => DeleteMapNotifier(),
+);
 
-final swipeSavedProvider =
-    StateNotifierProvider<SavedNotifier, List<AssetEntity>>((ref) {
-  return SavedNotifier();
-});
+final selectedDeleteProvider =
+    StateProvider.family<Set<String>, String>((ref, listKey) => <String>{});

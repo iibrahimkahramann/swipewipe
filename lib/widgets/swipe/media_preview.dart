@@ -109,7 +109,7 @@ class MediaPreview extends StatelessWidget {
   Widget _buildImageCard(BuildContext context, Uint8List bytes, Size size) {
     return Card(
       elevation: 6,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       clipBehavior: Clip.antiAlias,
       child: Column(
         mainAxisSize: MainAxisSize.min,

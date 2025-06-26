@@ -9,14 +9,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swipewipe/config/theme/custom_theme.dart';
 import 'package:swipewipe/providers/swipe/swipe_provider.dart';
 import 'package:swipewipe/widgets/swipe/media_preview.dart';
-import 'package:swipewipe/providers/gallery/albums_media_provider.dart';
 import 'package:swipewipe/components/organize/swipe_complete_button.dart';
 import 'package:swipewipe/components/organize/monthly_complete_helper.dart';
+import 'package:swipewipe/widgets/swipe/delete_preview_page.dart';
 
 enum SwipDirection { Left, Right }
 
 final swipeIndexProvider =
-    StateNotifierProvider<SwipeIndexNotifier, int>((ref) {
+    StateNotifierProvider.family<SwipeIndexNotifier, int, String>(
+        (ref, listKey) {
   return SwipeIndexNotifier();
 });
 
@@ -32,8 +33,10 @@ class SwipeIndexNotifier extends StateNotifier<int> {
   }
 }
 
-final listCompletedProvider = StateProvider<bool>((ref) => false);
-final listPendingProvider = StateProvider<bool>((ref) => false);
+final listCompletedProvider =
+    StateProvider.family<bool, String>((ref, listKey) => false);
+final listPendingProvider =
+    StateProvider.family<bool, String>((ref, listKey) => false);
 
 class SwipeImageView extends ConsumerStatefulWidget {
   final String? listKey;
@@ -68,10 +71,11 @@ class _SwipeImageViewState extends ConsumerState<SwipeImageView>
     _animationController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 300));
 
-    // Provider'ları sıfırla
+    final listKey = widget.listKey ?? 'default';
+    // Provider'ları sıfırla (her listeye özel)
     Future.microtask(() {
-      ref.read(listCompletedProvider.notifier).state = false;
-      ref.read(listPendingProvider.notifier).state = false;
+      ref.read(listCompletedProvider(listKey).notifier).state = false;
+      ref.read(listPendingProvider(listKey).notifier).state = false;
     });
     _checkListCompleted();
     _loadSavedIndex();
@@ -85,6 +89,7 @@ class _SwipeImageViewState extends ConsumerState<SwipeImageView>
 
   Future<void> _loadSavedIndex() async {
     int index = 0;
+    final listKey = widget.listKey ?? 'default';
     if (widget.initialIndex != null) {
       index = widget.initialIndex!;
     } else if (widget.listKey != null) {
@@ -93,11 +98,13 @@ class _SwipeImageViewState extends ConsumerState<SwipeImageView>
       index = savedIndex < _localImages.length ? savedIndex : 0;
     }
     Future.microtask(() {
-      ref.read(swipeIndexProvider.notifier).setIndex(index);
+      ref.read(swipeIndexProvider(listKey).notifier).setIndex(index);
     });
-    setState(() {
-      _isIndexReady = true;
-    });
+    if (mounted) {
+      setState(() {
+        _isIndexReady = true;
+      });
+    }
   }
 
   Future<void> _saveCurrentIndex(int index) async {
@@ -111,28 +118,21 @@ class _SwipeImageViewState extends ConsumerState<SwipeImageView>
     if (index < 0 || index >= _localImages.length) return;
 
     final media = _localImages[index];
+    final listKey = widget.listKey ?? 'default';
 
     if (direction == SwipDirection.Right) {
-      ref.read(globalDeleteProvider.notifier).add(media);
+      ref.read(deleteMapProvider.notifier).add(listKey, media);
     } else if (direction == SwipDirection.Left) {
-      ref.read(swipeSavedProvider.notifier).add(media);
+      ref.read(swipePendingDeleteProvider.notifier).add(media);
     }
 
     final newIndex = index + 1;
-    ref.read(swipeIndexProvider.notifier).setIndex(newIndex);
+    ref.read(swipeIndexProvider(listKey).notifier).setIndex(newIndex);
     _saveCurrentIndex(newIndex);
   }
 
   void _onManualAction(SwipDirection direction, int currentIndex) {
     if (currentIndex >= _localImages.length) return;
-
-    final media = _localImages[currentIndex];
-
-    if (direction == SwipDirection.Right) {
-      ref.read(globalDeleteProvider.notifier).add(media);
-    } else {
-      ref.read(swipeSavedProvider.notifier).add(media);
-    }
 
     // Swipe animasyonunu başlat
     setState(() {
@@ -163,7 +163,8 @@ class _SwipeImageViewState extends ConsumerState<SwipeImageView>
           _dragOffset = Offset.zero;
           _swipeDirection = null;
         } else {
-          final currentIndex = ref.read(swipeIndexProvider);
+          final currentIndex =
+              ref.read(swipeIndexProvider(widget.listKey ?? 'default'));
           if (_swipeDirection != null) {
             _onSwipeComplete(currentIndex, _swipeDirection!);
           }
@@ -217,15 +218,17 @@ class _SwipeImageViewState extends ConsumerState<SwipeImageView>
     if (_localImages.isNotEmpty) {
       final completed =
           await MonthlyCompleteHelper.isListCompleted(_localImages);
+      final listKey = widget.listKey ?? 'default';
       Future.microtask(() {
-        ref.read(listCompletedProvider.notifier).state = completed;
+        ref.read(listCompletedProvider(listKey).notifier).state = completed;
       });
     }
   }
 
   void _onListPending() {
+    final listKey = widget.listKey ?? 'default';
     Future.microtask(() {
-      ref.read(listPendingProvider.notifier).state = true;
+      ref.read(listPendingProvider(listKey).notifier).state = true;
     });
   }
 
@@ -237,10 +240,11 @@ class _SwipeImageViewState extends ConsumerState<SwipeImageView>
       );
     }
 
+    final listKey = widget.listKey ?? 'default';
     final images = ref.watch(swipeImagesProvider);
-    final currentIndex = ref.watch(swipeIndexProvider);
-    final isListCompleted = ref.watch(listCompletedProvider);
-    final isPendingComplete = ref.watch(listPendingProvider);
+    final currentIndex = ref.watch(swipeIndexProvider(listKey));
+    final isListCompleted = ref.watch(listCompletedProvider(listKey));
+    final isPendingComplete = ref.watch(listPendingProvider(listKey));
 
     // Fotoğraf listesi güncellenirse local'i yenile
     if (!_listEquals(_localImages, images)) {
@@ -256,7 +260,7 @@ class _SwipeImageViewState extends ConsumerState<SwipeImageView>
         !isPendingComplete) {
       // Liste bittiğinde pending olarak işaretle
       WidgetsBinding.instance.addPostFrameCallback((_) async {
-        if (!ref.read(listPendingProvider)) {
+        if (!ref.read(listPendingProvider(listKey))) {
           _onListPending();
           await MonthlyCompleteHelper.setListPending(_localImages);
         }
@@ -294,15 +298,64 @@ class _SwipeImageViewState extends ConsumerState<SwipeImageView>
                     ],
                   ),
                 ),
-                SizedBox(height: height * 0.02),
+                SizedBox(height: height * 0.01),
                 if (!isListCompleted)
                   SwipeCompleteButton(
                     onPressed: () async {
                       await MonthlyCompleteHelper.clearPending(_localImages);
-                      ref.read(swipeIndexProvider.notifier).setIndex(0);
-                      ref.read(listPendingProvider.notifier).state = false;
+                      ref
+                          .read(swipeIndexProvider(listKey).notifier)
+                          .setIndex(0);
+                      ref.read(listPendingProvider(listKey).notifier).state =
+                          false;
                     },
                   ),
+                Consumer(builder: (context, ref, _) {
+                  final deleteCount =
+                      ref.watch(deleteMapProvider)[listKey]?.length ?? 0;
+                  return Container(
+                    width: width * 0.999,
+                    height: height * 0.06,
+                    margin: EdgeInsets.symmetric(
+                        horizontal: width * 0.001, vertical: height * 0.01),
+                    child: ElevatedButton.icon(
+                      onPressed: deleteCount == 0
+                          ? null
+                          : () async {
+                              final deleteList = ref
+                                      .read(deleteMapProvider)[listKey]
+                                      ?.toList() ??
+                                  [];
+                              if (deleteList.isEmpty) return;
+                              await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => DeletePreviewPage(
+                                    deleteList: deleteList,
+                                    listKey: listKey,
+                                  ),
+                                ),
+                              );
+                            },
+                      icon: Icon(
+                        Icons.delete,
+                        color: Colors.red,
+                      ),
+                      label: Text(
+                        '${'View to be Deleted'.tr()} ($deleteCount)',
+                        style: CustomTheme.textTheme(context)
+                            .bodySmall
+                            ?.copyWith(color: Colors.red),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: CustomTheme.secondaryColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  );
+                }),
               ],
             ),
           ),
@@ -316,92 +369,6 @@ class _SwipeImageViewState extends ConsumerState<SwipeImageView>
           '${currentIndex + 1} / ${_localImages.length}',
           style: CustomTheme.textTheme(context).bodyLarge,
         ),
-        actions: [
-          Consumer(builder: (context, ref, _) {
-            final deleteCount = ref.watch(globalDeleteProvider).length;
-            return Stack(
-              alignment: Alignment.center,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.delete),
-                  tooltip: 'Silinecekleri Sil',
-                  onPressed: () async {
-                    final confirmed = await showDialog<bool>(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: const Text('Fotoğrafları Sil'),
-                        content: Text(
-                            'Seçili $deleteCount fotoğrafı kalıcı olarak silmek istediğine emin misin?'),
-                        actions: [
-                          TextButton(
-                              onPressed: () => Navigator.pop(context, false),
-                              child: const Text('İptal')),
-                          TextButton(
-                              onPressed: () => Navigator.pop(context, true),
-                              child: const Text('Sil')),
-                        ],
-                      ),
-                    );
-
-                    if (confirmed != true) return;
-
-                    try {
-                      final deletedIds = await PhotoManager.editor
-                          .deleteWithIds(ref
-                              .read(globalDeleteProvider)
-                              .map((e) => e.id)
-                              .toList());
-
-                      if (deletedIds.isNotEmpty) {
-                        ref.read(globalDeleteProvider.notifier).clear();
-                        ref.invalidate(albumsWithPhotosProvider);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text('Fotoğraflar başarıyla silindi.')),
-                        );
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text('Bazı fotoğraflar silinemedi!')),
-                        );
-                      }
-                    } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                            content:
-                                Text('Silme işlemi sırasında hata oluştu: $e')),
-                      );
-                    }
-                  },
-                ),
-                if (deleteCount > 0)
-                  Positioned(
-                    right: height * 0.002,
-                    top: height * 0.0002,
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: const BoxDecoration(
-                          color: Colors.red, shape: BoxShape.circle),
-                      constraints: BoxConstraints(
-                        minWidth: height * 0.025,
-                        minHeight: height * 0.025,
-                      ),
-                      child: Center(
-                        child: Text(
-                          '$deleteCount',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: height * 0.015,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            );
-          }),
-        ],
       ),
       body: Center(
         child: SizedBox(
