@@ -1,19 +1,44 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:photo_manager/photo_manager.dart';
 
-final albumListProvider = FutureProvider<List<AssetPathEntity>>((ref) async {
+final albumsWithPhotosProvider =
+    FutureProvider<Map<String, List<AssetEntity>>>((ref) async {
   final permission = await PhotoManager.requestPermissionExtend();
-  if (!permission.isAuth) return [];
+  if (!permission.isAuth) {
+    throw Exception('Galeri erişim izni verilmedi.');
+  }
 
-  final albums = await PhotoManager.getAssetPathList(
-    type: RequestType.all,
+  final List<AssetPathEntity> albums = await PhotoManager.getAssetPathList(
+    type: RequestType.image,
     filterOption: FilterOptionGroup(
-      imageOption: const FilterOption(
-        sizeConstraint: SizeConstraint(ignoreSize: true),
-      ),
-      orders: [const OrderOption(type: OrderOptionType.createDate, asc: false)],
+      orders: [
+        const OrderOption(type: OrderOptionType.createDate, asc: false),
+      ],
     ),
   );
 
-  return albums;
+  Map<String, List<AssetEntity>> albumPhotos = {};
+  for (final album in albums) {
+    final count = await album.assetCountAsync;
+    if (count == 0) continue;
+    final images = await album.getAssetListRange(start: 0, end: count);
+    final uniqueAssets = <String, AssetEntity>{};
+    for (final image in images) {
+      uniqueAssets[image.id] = image;
+    }
+    final filteredImages = <AssetEntity>[];
+    for (final asset in uniqueAssets.values) {
+      try {
+        final file = await asset.originFile;
+        if (file == null || !(await file.exists())) {
+          continue;
+        }
+        filteredImages.add(asset);
+      } catch (_) {
+        continue;
+      }
+    }
+    albumPhotos[album.name] = filteredImages;
+  }
+  return albumPhotos;
 });

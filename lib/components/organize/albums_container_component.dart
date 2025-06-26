@@ -5,6 +5,7 @@ import 'package:swipewipe/config/theme/custom_theme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:swipewipe/providers/swipe/swipe_provider.dart';
 import 'monthly_complete_helper.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AlbumsContainerComponent extends ConsumerWidget {
   final double height;
@@ -35,15 +36,24 @@ class AlbumsContainerComponent extends ConsumerWidget {
           children: [
             SizedBox(height: height * 0.01),
             GestureDetector(
-              onTap: () {
-                ref.read(swipeImagesProvider.notifier).setImages(photoList);
-                ref.read(swipeCurrentIndexProvider.notifier).state = 0;
+              onTap: () async {
+                await ref
+                    .read(swipeImagesProvider.notifier)
+                    .setImagesFiltered(photoList);
+                final filteredList = ref.read(swipeImagesProvider);
+                final prefs = await SharedPreferences.getInstance();
+                final savedIndex =
+                    prefs.getInt('swipe_index_${albumsTitle}') ?? 0;
+                final safeIndex =
+                    savedIndex < filteredList.length ? savedIndex : 0;
+                ref.read(swipeCurrentIndexProvider.notifier).state = safeIndex;
                 ref.read(swipePendingDeleteProvider.notifier).clear();
                 context.push(
                   '/swipe',
                   extra: {
-                    'mediaList': photoList,
-                    'initialIndex': 0,
+                    'mediaList': filteredList,
+                    'initialIndex': safeIndex,
+                    'listKey': albumsTitle,
                   },
                 );
               },

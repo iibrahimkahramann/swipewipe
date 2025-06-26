@@ -9,6 +9,7 @@ import 'package:swipewipe/config/bar/navbar.dart';
 import 'package:swipewipe/config/theme/custom_theme.dart';
 import 'package:swipewipe/providers/gallery/monthly_media_providers.dart';
 import 'package:swipewipe/providers/gallery/weekly_media_provider.dart';
+import 'package:swipewipe/providers/swipe/swipe_provider.dart';
 
 class OrganizeView extends ConsumerStatefulWidget {
   const OrganizeView({super.key});
@@ -23,8 +24,8 @@ class _OrganizeViewState extends ConsumerState<OrganizeView> {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
 
-    final groupedMonthlyMediaAsync = ref.watch(monthlyMediaProvider);
-    final groupedWeeklyMediaAsync = ref.watch(weeklyMediaProvider);
+    final weeklyMediaAsync = ref.watch(weeklyMediaProvider);
+    final monthlyMediaAsync = ref.watch(monthlyMediaProvider);
 
     return Scaffold(
       appBar: CustomAppBar(),
@@ -35,35 +36,25 @@ class _OrganizeViewState extends ConsumerState<OrganizeView> {
         ),
         child: ListView(
           children: [
-            groupedWeeklyMediaAsync.when(
+            weeklyMediaAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, _) => Text('Hata: $e'),
-              data: (weeklyGrouped) {
-                if (weeklyGrouped.isEmpty) {
-                  return Center(
-                    child: Column(
-                      children: [
-                        Text("You cannot use without gallery permission".tr(),
-                            style: CustomTheme.textTheme(context).bodySmall),
-                        SizedBox(height: height * 0.01),
-                      ],
-                    ),
-                  );
+              data: (weeklyAssets) {
+                if (weeklyAssets.isEmpty) {
+                  return Center(child: Text("No photos in last 7 days"));
                 }
-
-                final sortedKeys = weeklyGrouped.keys.toList()
-                  ..sort((a, b) => b.compareTo(a));
-                final latestWeekKey = sortedKeys.first;
-                final weeklyAssets = weeklyGrouped[latestWeekKey]!;
-
                 return OrganizeWeeklyComponent(
                   height: height,
                   width: width,
                   assets: weeklyAssets,
-                  onTap: () {
+                  onTap: () async {
+                    await ref
+                        .read(swipeImagesProvider.notifier)
+                        .setImagesFiltered(weeklyAssets);
                     context.push('/swipe', extra: {
                       'mediaList': weeklyAssets,
                       'initialIndex': 0,
+                      'listKey': 'weekly',
                     });
                   },
                 );
@@ -74,17 +65,18 @@ class _OrganizeViewState extends ConsumerState<OrganizeView> {
               'By Month'.tr(),
               style: CustomTheme.textTheme(context).bodyMedium,
             ),
-            groupedMonthlyMediaAsync.when(
+            monthlyMediaAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, _) => Center(child: Text('Hata: $e')),
-              data: (groupedMonthlyMedia) {
-                final keys = groupedMonthlyMedia.keys.toList()
-                  ..sort((a, b) => b.compareTo(a));
-
+              data: (monthlyGroups) {
+                if (monthlyGroups.isEmpty) {
+                  return Center(child: Text("No photos found by month"));
+                }
+                final keys = monthlyGroups.keys.toList()
+                  ..sort((a, b) => b.compareTo(a)); // Yeni ay en üstte
                 return Column(
                   children: keys.map((monthTitle) {
-                    final photos = groupedMonthlyMedia[monthTitle]!;
-
+                    final photos = monthlyGroups[monthTitle]!;
                     return AlbumsContainerComponent(
                       height: height,
                       width: width,

@@ -9,6 +9,22 @@ class SwipeImagesNotifier extends StateNotifier<List<AssetEntity>> {
     state = images;
   }
 
+  Future<void> setImagesFiltered(List<AssetEntity> images) async {
+    final filtered = <AssetEntity>[];
+    for (final asset in images) {
+      try {
+        final file = await asset.originFile;
+        if (file != null && await file.exists()) {
+          filtered.add(asset);
+        }
+      } catch (e) {
+        // PlatformException veya diğer hatalar: asset'i ekleme, devam et
+        continue;
+      }
+    }
+    state = filtered;
+  }
+
   void removeAt(int index) {
     if (index < state.length) {
       state = [...state]..removeAt(index);
@@ -111,6 +127,24 @@ class GlobalDeleteNotifier extends StateNotifier<List<AssetEntity>> {
   }
 }
 
+class SavedNotifier extends StateNotifier<List<AssetEntity>> {
+  SavedNotifier() : super([]);
+
+  void add(AssetEntity asset) {
+    if (!state.any((e) => e.id == asset.id)) {
+      state = [...state, asset];
+    }
+  }
+
+  void remove(AssetEntity asset) {
+    state = state.where((e) => e.id != asset.id).toList();
+  }
+
+  void clear() {
+    state = [];
+  }
+}
+
 final swipeImagesProvider =
     StateNotifierProvider<SwipeImagesNotifier, List<AssetEntity>>((ref) {
   return SwipeImagesNotifier();
@@ -130,4 +164,9 @@ final userGalleryStatsProvider =
 final globalDeleteProvider =
     StateNotifierProvider<GlobalDeleteNotifier, List<AssetEntity>>((ref) {
   return GlobalDeleteNotifier();
+});
+
+final swipeSavedProvider =
+    StateNotifierProvider<SavedNotifier, List<AssetEntity>>((ref) {
+  return SavedNotifier();
 });

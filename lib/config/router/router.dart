@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:photo_manager/photo_manager.dart';
 import 'package:swipewipe/views/albums/albums_view.dart';
 import 'package:swipewipe/views/onboarding/onboarding_three.dart';
 import 'package:swipewipe/views/onboarding/onboarding_two_view.dart';
@@ -79,14 +78,12 @@ final router = GoRouter(
     GoRoute(
       path: '/swipe',
       pageBuilder: (context, state) {
-        final extra = state.extra as Map<String, dynamic>;
-        final mediaList = extra['mediaList'] as List<AssetEntity>;
-        final initialIndex = extra['initialIndex'] as int;
-
+        final extra = state.extra as Map<String, dynamic>?;
         return fadeScalePage(
-          child: SwipeImagePage(
-            mediaList: mediaList,
-            initialIndex: initialIndex,
+          child: SwipeImageView(
+            listKey: extra?['listKey'],
+            // initialIndex: extra?['initialIndex'] ?? 0,
+            initialList: extra?['mediaList'],
           ),
           state: state,
         );

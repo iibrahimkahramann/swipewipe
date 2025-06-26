@@ -14,25 +14,49 @@ String getYearWeek(DateTime date) {
   return '${date.year}-W$weekNumber';
 }
 
-final weeklyMediaProvider =
-    FutureProvider<Map<String, List<AssetEntity>>>((ref) async {
+final weeklyMediaProvider = FutureProvider<List<AssetEntity>>((ref) async {
   final permission = await PhotoManager.requestPermissionExtend();
-  if (!permission.isAuth) return {};
-
-  final albums = await PhotoManager.getAssetPathList(
-    onlyAll: true,
-    type: RequestType.all,
-  );
-
-  final mediaList = await albums.first.getAssetListPaged(page: 0, size: 1000);
-
-  final Map<String, List<AssetEntity>> grouped = {};
-
-  for (var media in mediaList) {
-    final date = media.createDateTime;
-    final key = getYearWeek(date);
-    grouped.putIfAbsent(key, () => []).add(media);
+  if (!permission.isAuth) {
+    throw Exception('Galeri erişim izni verilmedi.');
   }
 
-  return grouped;
+  final now = DateTime.now();
+  final sevenDaysAgo = now.subtract(const Duration(days: 7));
+
+  final List<AssetPathEntity> albums = await PhotoManager.getAssetPathList(
+    type: RequestType.image,
+    filterOption: FilterOptionGroup(
+      orders: [
+        const OrderOption(type: OrderOptionType.createDate, asc: false),
+      ],
+      createTimeCond: DateTimeCond(
+        min: sevenDaysAgo,
+        max: now,
+      ),
+    ),
+  );
+
+  List<AssetEntity> recentImages = [];
+  for (final album in albums) {
+    final count = await album.assetCountAsync;
+    if (count == 0) continue;
+    final images = await album.getAssetListRange(start: 0, end: count);
+    for (final image in images) {
+      try {
+        final file = await image.originFile;
+        if (file == null || !(await file.exists())) {
+          continue;
+        }
+        recentImages.add(image);
+      } catch (_) {
+        continue;
+      }
+    }
+  }
+  // Benzersizleştir (id'ye göre)
+  final uniqueAssets = <String, AssetEntity>{};
+  for (final asset in recentImages) {
+    uniqueAssets[asset.id] = asset;
+  }
+  return uniqueAssets.values.toList();
 });
