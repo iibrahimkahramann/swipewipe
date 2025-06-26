@@ -82,8 +82,8 @@ final router = GoRouter(
         return fadeScalePage(
           child: SwipeImageView(
             listKey: extra?['listKey'],
-            // initialIndex: extra?['initialIndex'] ?? 0,
             initialList: extra?['mediaList'],
+            initialIndex: extra?['initialIndex'],
           ),
           state: state,
         );

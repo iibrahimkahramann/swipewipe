@@ -1,20 +1,20 @@
 import 'dart:math';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lottie/lottie.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swipewipe/config/theme/custom_theme.dart';
 import 'package:swipewipe/providers/swipe/swipe_provider.dart';
 import 'package:swipewipe/widgets/swipe/media_preview.dart';
 import 'package:swipewipe/providers/gallery/albums_media_provider.dart';
+import 'package:swipewipe/components/organize/swipe_complete_button.dart';
+import 'package:swipewipe/components/organize/monthly_complete_helper.dart';
 
-// Swipe yönü enum'u
 enum SwipDirection { Left, Right }
 
-// Global providerlar
-
-/// Şu anki swipe index'i tutar
 final swipeIndexProvider =
     StateNotifierProvider<SwipeIndexNotifier, int>((ref) {
   return SwipeIndexNotifier();
@@ -32,13 +32,16 @@ class SwipeIndexNotifier extends StateNotifier<int> {
   }
 }
 
-// Widget
+final listCompletedProvider = StateProvider<bool>((ref) => false);
+final listPendingProvider = StateProvider<bool>((ref) => false);
 
 class SwipeImageView extends ConsumerStatefulWidget {
   final String? listKey;
   final List<AssetEntity>? initialList;
+  final int? initialIndex;
 
-  const SwipeImageView({super.key, this.listKey, this.initialList});
+  const SwipeImageView(
+      {super.key, this.listKey, this.initialList, this.initialIndex});
 
   @override
   ConsumerState<SwipeImageView> createState() => _SwipeImageViewState();
@@ -65,6 +68,12 @@ class _SwipeImageViewState extends ConsumerState<SwipeImageView>
     _animationController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 300));
 
+    // Provider'ları sıfırla
+    Future.microtask(() {
+      ref.read(listCompletedProvider.notifier).state = false;
+      ref.read(listPendingProvider.notifier).state = false;
+    });
+    _checkListCompleted();
     _loadSavedIndex();
   }
 
@@ -75,15 +84,17 @@ class _SwipeImageViewState extends ConsumerState<SwipeImageView>
   }
 
   Future<void> _loadSavedIndex() async {
-    if (widget.listKey != null) {
+    int index = 0;
+    if (widget.initialIndex != null) {
+      index = widget.initialIndex!;
+    } else if (widget.listKey != null) {
       final prefs = await SharedPreferences.getInstance();
       final savedIndex = prefs.getInt('swipe_index_${widget.listKey}') ?? 0;
-      // index sınırı aşmasın
-      final safeIndex = savedIndex < _localImages.length ? savedIndex : 0;
-      ref.read(swipeIndexProvider.notifier).setIndex(safeIndex);
-    } else {
-      ref.read(swipeIndexProvider.notifier).setIndex(0);
+      index = savedIndex < _localImages.length ? savedIndex : 0;
     }
+    Future.microtask(() {
+      ref.read(swipeIndexProvider.notifier).setIndex(index);
+    });
     setState(() {
       _isIndexReady = true;
     });
@@ -149,11 +160,9 @@ class _SwipeImageViewState extends ConsumerState<SwipeImageView>
     _animationController.forward(from: 0).whenComplete(() {
       setState(() {
         if (target == Offset.zero) {
-          // Animasyon geri dönüyorsa dragOffset sıfırlanır
           _dragOffset = Offset.zero;
           _swipeDirection = null;
         } else {
-          // Animasyon sağa veya sola gidiyorsa swipe tamamlanmış demektir
           final currentIndex = ref.read(swipeIndexProvider);
           if (_swipeDirection != null) {
             _onSwipeComplete(currentIndex, _swipeDirection!);
@@ -204,6 +213,22 @@ class _SwipeImageViewState extends ConsumerState<SwipeImageView>
     return true;
   }
 
+  Future<void> _checkListCompleted() async {
+    if (_localImages.isNotEmpty) {
+      final completed =
+          await MonthlyCompleteHelper.isListCompleted(_localImages);
+      Future.microtask(() {
+        ref.read(listCompletedProvider.notifier).state = completed;
+      });
+    }
+  }
+
+  void _onListPending() {
+    Future.microtask(() {
+      ref.read(listPendingProvider.notifier).state = true;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     if (!_isIndexReady) {
@@ -214,6 +239,8 @@ class _SwipeImageViewState extends ConsumerState<SwipeImageView>
 
     final images = ref.watch(swipeImagesProvider);
     final currentIndex = ref.watch(swipeIndexProvider);
+    final isListCompleted = ref.watch(listCompletedProvider);
+    final isPendingComplete = ref.watch(listPendingProvider);
 
     // Fotoğraf listesi güncellenirse local'i yenile
     if (!_listEquals(_localImages, images)) {
@@ -224,18 +251,60 @@ class _SwipeImageViewState extends ConsumerState<SwipeImageView>
     final height = MediaQuery.of(context).size.height;
     final size = MediaQuery.of(context).size;
 
-    if (currentIndex >= _localImages.length) {
-      // Tüm fotoğraflar tamamlandı ekranı
+    if (currentIndex >= _localImages.length &&
+        !isListCompleted &&
+        !isPendingComplete) {
+      // Liste bittiğinde pending olarak işaretle
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        if (!ref.read(listPendingProvider)) {
+          _onListPending();
+          await MonthlyCompleteHelper.setListPending(_localImages);
+        }
+      });
+    }
+    if (currentIndex >= _localImages.length ||
+        isListCompleted ||
+        isPendingComplete) {
       return Scaffold(
         appBar: AppBar(
-          title: Text('Tüm Fotoğraflar Tamamlandı',
-              style: CustomTheme.textTheme(context).bodyLarge),
+          title: Text('Swipe', style: CustomTheme.textTheme(context).bodyLarge),
         ),
         body: Center(
-          child: Text(
-            'Tebrikler! Tüm fotoğrafları tamamladınız.',
-            style: Theme.of(context).textTheme.headlineSmall,
-            textAlign: TextAlign.center,
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+                horizontal: width * 0.05, vertical: height * 0.05),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  height: height * 0.4,
+                  width: width,
+                  decoration: BoxDecoration(
+                      color: CustomTheme.secondaryColor,
+                      borderRadius: BorderRadius.circular(16)),
+                  child: Column(
+                    children: [
+                      Lottie.asset('assets/icons/tik.json',
+                          height: height * 0.33, width: width * 0.8),
+                      Text(
+                        'Swipe List Completed'.tr(),
+                        style: Theme.of(context).textTheme.bodyMedium,
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: height * 0.02),
+                if (!isListCompleted)
+                  SwipeCompleteButton(
+                    onPressed: () async {
+                      await MonthlyCompleteHelper.clearPending(_localImages);
+                      ref.read(swipeIndexProvider.notifier).setIndex(0);
+                      ref.read(listPendingProvider.notifier).state = false;
+                    },
+                  ),
+              ],
+            ),
           ),
         ),
       );

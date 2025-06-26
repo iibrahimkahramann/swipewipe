@@ -11,9 +11,10 @@ class SwipeCompleteButton extends StatelessWidget {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
     return Container(
-      width: width * 0.79,
+      width: width * 0.999,
       height: height * 0.06,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: EdgeInsets.symmetric(
+          horizontal: width * 0.001, vertical: height * 0.01),
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
