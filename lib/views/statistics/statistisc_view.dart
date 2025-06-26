@@ -61,42 +61,52 @@ class _StatistiscViewState extends ConsumerState<StatistiscView> {
                 height: height,
                 title: tr('Error'),
               ),
-              data: (mediaList) => DefaultStatistiscConainer(
-                width: width,
-                height: height,
-                title: tr('Photo', args: ['${mediaList.length}']),
-              ),
-            ),
-            SizedBox(
-              height: height * 0.01,
-            ),
-            DefaultStatistiscConainer(
-              width: width,
-              height: height,
-              title: stats.isLoading
-                  ? tr('Loading')
-                  : tr('Photo Stored',
-                      args: ['${stats.value?.savedCount ?? 0}']),
-            ),
-            SizedBox(
-              height: height * 0.01,
-            ),
-            DefaultStatistiscConainer(
-              width: width,
-              height: height,
-              title: tr('Photo Deleted',
-                  args: ['${stats.value?.deletedCount ?? 0}']),
-            ),
-            SizedBox(
-              height: height * 0.01,
-            ),
-            DefaultStatistiscConainer(
-              width: width,
-              height: height,
-              title: tr('KB Deleted', args: [
-                ((stats.value?.deletedTotalBytes ?? 0) / 1024)
-                    .toStringAsFixed(1)
-              ]),
+              data: (mediaList) {
+                print('DEBUG: Total media: ${mediaList.length}');
+                print('DEBUG: deletedCount: ${stats.value?.deletedCount}');
+                print('DEBUG: savedCount: ${stats.value?.savedCount}');
+                print(
+                    'DEBUG: deletedTotalBytes: ${stats.value?.deletedTotalBytes}');
+                return Column(
+                  children: [
+                    DefaultStatistiscConainer(
+                      width: width,
+                      height: height,
+                      title: tr(
+                        'Photo',
+                        args: ['${mediaList.length}'],
+                      ),
+                    ),
+                    SizedBox(height: height * 0.01),
+                    DefaultStatistiscConainer(
+                      width: width,
+                      height: height,
+                      title: tr(
+                        'Photo Stored',
+                        args: ['${stats.value?.savedCount ?? 0}'],
+                      ),
+                    ),
+                    SizedBox(height: height * 0.01),
+                    DefaultStatistiscConainer(
+                      width: width,
+                      height: height,
+                      title: tr(
+                        'Photo Deleted',
+                        args: ['${stats.value?.deletedCount ?? 0}'],
+                      ),
+                    ),
+                    SizedBox(height: height * 0.01),
+                    DefaultStatistiscConainer(
+                      width: width,
+                      height: height,
+                      title: tr('KB Deleted', args: [
+                        ((stats.value?.deletedTotalBytes ?? 0) / 1024)
+                            .toStringAsFixed(1)
+                      ]),
+                    ),
+                  ],
+                );
+              },
             ),
             SizedBox(
               height: height * 0.02,

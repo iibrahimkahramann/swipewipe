@@ -46,10 +46,12 @@ class DeletePreviewPage extends ConsumerWidget {
                         .toList();
                     // Silinecek fotoğrafların toplam boyutunu hesapla
                     int totalBytes = 0;
+                    final deletedBytesList = <int>[];
                     for (final asset in toDelete) {
                       final file = await asset.file;
                       if (file != null) {
                         totalBytes += await file.length();
+                        deletedBytesList.add(await file.length());
                       }
                     }
                     // Silme işlemi
@@ -62,6 +64,12 @@ class DeletePreviewPage extends ConsumerWidget {
                     ref.read(selectedDeleteProvider(listKey).notifier).state =
                         toKeep.map((e) => e.id).toSet();
                     if (deletedIds.isNotEmpty) {
+                      // İstatistik güncelle: silinen her fotoğraf için
+                      final statsNotifier =
+                          ref.read(userGalleryStatsProvider.notifier);
+                      for (final bytes in deletedBytesList) {
+                        await statsNotifier.addDeleted(bytes);
+                      }
                       showDialog(
                         context: context,
                         barrierDismissible: true,

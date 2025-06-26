@@ -15,6 +15,7 @@ final mediaProvider = FutureProvider<List<AssetEntity>>((ref) async {
 
   final recentAlbum = albums.first;
 
-  final media = await recentAlbum.getAssetListPaged(page: 0, size: 100);
+  final count = await recentAlbum.assetCountAsync;
+  final media = await recentAlbum.getAssetListRange(start: 0, end: count);
   return media;
 });

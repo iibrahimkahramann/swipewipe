@@ -10,6 +10,7 @@ import 'package:swipewipe/config/theme/custom_theme.dart';
 import 'package:swipewipe/providers/gallery/monthly_media_providers.dart';
 import 'package:swipewipe/providers/gallery/weekly_media_provider.dart';
 import 'package:swipewipe/providers/swipe/swipe_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OrganizeView extends ConsumerStatefulWidget {
   const OrganizeView({super.key});
@@ -51,11 +52,22 @@ class _OrganizeViewState extends ConsumerState<OrganizeView> {
                     await ref
                         .read(swipeImagesProvider.notifier)
                         .setImagesFiltered(weeklyAssets);
-                    context.push('/swipe', extra: {
-                      'mediaList': weeklyAssets,
-                      'initialIndex': 0,
-                      'listKey': 'weekly',
-                    });
+                    final filteredList = ref.read(swipeImagesProvider);
+                    final prefs = await SharedPreferences.getInstance();
+                    final savedIndex = prefs.getInt('swipe_index_weekly') ?? 0;
+                    final listKey = 'weekly';
+                    ref.read(swipeCurrentIndexProvider.notifier).state =
+                        savedIndex < filteredList.length ? savedIndex : 0;
+                    ref.read(swipePendingDeleteProvider.notifier).clear();
+                    context.push(
+                      '/swipe',
+                      extra: {
+                        'mediaList': filteredList,
+                        'initialIndex':
+                            savedIndex < filteredList.length ? savedIndex : 0,
+                        'listKey': listKey,
+                      },
+                    );
                   },
                 );
               },

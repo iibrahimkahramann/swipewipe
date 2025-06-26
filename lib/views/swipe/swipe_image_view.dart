@@ -12,6 +12,8 @@ import 'package:swipewipe/widgets/swipe/media_preview.dart';
 import 'package:swipewipe/components/organize/swipe_complete_button.dart';
 import 'package:swipewipe/components/organize/monthly_complete_helper.dart';
 import 'package:swipewipe/widgets/swipe/delete_preview_page.dart';
+import 'package:swipewipe/providers/premium/premium_provider.dart';
+import 'package:swipewipe/config/functions/rc_paywall.dart';
 
 enum SwipDirection { Left, Right }
 
@@ -114,16 +116,30 @@ class _SwipeImageViewState extends ConsumerState<SwipeImageView>
     }
   }
 
-  void _onSwipeComplete(int index, SwipDirection direction) {
+  void _onSwipeComplete(int index, SwipDirection direction) async {
     if (index < 0 || index >= _localImages.length) return;
 
     final media = _localImages[index];
     final listKey = widget.listKey ?? 'default';
 
+    final isPremium = ref.read(isPremiumProvider);
+    if (!isPremium) {
+      final prefs = await SharedPreferences.getInstance();
+      int swipeCount = prefs.getInt('swipe_free_count') ?? 0;
+      swipeCount++;
+      await prefs.setInt('swipe_free_count', swipeCount);
+      print('DEBUG: swipeCount: $swipeCount');
+      if (swipeCount > 15) {
+        await RevenueCatService.showPaywallIfNeeded();
+        return;
+      }
+    }
+
     if (direction == SwipDirection.Right) {
       ref.read(deleteMapProvider.notifier).add(listKey, media);
     } else if (direction == SwipDirection.Left) {
       ref.read(swipePendingDeleteProvider.notifier).add(media);
+      ref.read(userGalleryStatsProvider.notifier).addSaved();
     }
 
     final newIndex = index + 1;
