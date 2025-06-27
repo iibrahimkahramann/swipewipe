@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/material.dart';
+import 'package:swipewipe/views/swipe/swipe_image_view.dart';
 
 class SwipeImagesNotifier extends StateNotifier<List<AssetEntity>> {
   SwipeImagesNotifier() : super([]);
@@ -162,3 +164,7 @@ final deleteMapProvider =
 
 final selectedDeleteProvider =
     StateProvider.family<Set<String>, String>((ref, listKey) => <String>{});
+
+final swipeDirectionProvider = StateProvider<SwipDirection?>((ref) => null);
+final isDraggingProvider = StateProvider<bool>((ref) => false);
+final dragOffsetProvider = StateProvider<Offset>((ref) => Offset.zero);

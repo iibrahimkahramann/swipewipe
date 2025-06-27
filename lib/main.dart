@@ -95,28 +95,28 @@ class MyAppState extends ConsumerState<MyApp> {
         final prefs = await SharedPreferences.getInstance();
         final alreadyShown = prefs.getBool('rate_us_shown') ?? false;
         if (!alreadyShown) {
-          // _startRateUsTimer();
+          _startRateUsTimer();
         }
       });
     }
   }
 
-  // void _startRateUsTimer() {
-  //   _rateUsTimer = Timer(Duration(seconds: 30), () {
-  //     if (mounted) {
-  //       showDialog(
-  //         context: app_router.rootNavigatorKey.currentContext!,
-  //         barrierDismissible: false,
-  //         builder: (context) => Dialog(
-  //           shape: RoundedRectangleBorder(
-  //             borderRadius: BorderRadius.circular(24),
-  //           ),
-  //           child: RateUsDialogWithDelayedClose(),
-  //         ),
-  //       );
-  //     }
-  //   });
-  // }
+  void _startRateUsTimer() {
+    _rateUsTimer = Timer(Duration(seconds: 30), () {
+      if (mounted) {
+        showDialog(
+          context: app_router.rootNavigatorKey.currentContext!,
+          barrierDismissible: false,
+          builder: (context) => Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
+            ),
+            child: RateUsDialogWithDelayedClose(),
+          ),
+        );
+      }
+    });
+  }
 
   @override
   void dispose() {

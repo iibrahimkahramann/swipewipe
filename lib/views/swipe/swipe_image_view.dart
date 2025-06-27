@@ -119,21 +119,10 @@ class _SwipeImageViewState extends ConsumerState<SwipeImageView>
   void _onSwipeComplete(int index, SwipDirection direction) async {
     if (index < 0 || index >= _localImages.length) return;
 
-    final media = _localImages[index];
     final listKey = widget.listKey ?? 'default';
+    final media = _localImages[index];
 
-    final isPremium = ref.read(isPremiumProvider);
-    if (!isPremium) {
-      final prefs = await SharedPreferences.getInstance();
-      int swipeCount = prefs.getInt('swipe_free_count') ?? 0;
-      swipeCount++;
-      await prefs.setInt('swipe_free_count', swipeCount);
-      print('DEBUG: swipeCount: $swipeCount');
-      if (swipeCount > 15) {
-        await RevenueCatService.showPaywallIfNeeded();
-        return;
-      }
-    }
+    
 
     if (direction == SwipDirection.Right) {
       ref.read(deleteMapProvider.notifier).add(listKey, media);
@@ -144,7 +133,25 @@ class _SwipeImageViewState extends ConsumerState<SwipeImageView>
 
     final newIndex = index + 1;
     ref.read(swipeIndexProvider(listKey).notifier).setIndex(newIndex);
-    _saveCurrentIndex(newIndex);
+
+    // Şimdi, premium mantığını ve indeksi kaydetme işlemlerini asenkron olarak ele al,
+    // UI kaydırma için güncellendikten sonra.
+    Future.microtask(() async {
+      await _saveCurrentIndex(newIndex); // İndeksi kaydetmeyi ertele
+
+      final isPremium = ref.read(isPremiumProvider);
+      if (!isPremium) {
+        final prefs = await SharedPreferences.getInstance();
+        int swipeCount = prefs.getInt('swipe_free_count') ?? 0;
+        swipeCount++;
+        await prefs.setInt('swipe_free_count', swipeCount);
+        if (swipeCount > 15) {
+          WidgetsBinding.instance.addPostFrameCallback((_) async {
+            await RevenueCatService.showPaywallIfNeeded();
+          });
+        }
+      }
+    });
   }
 
   void _onManualAction(SwipDirection direction, int currentIndex) {
@@ -458,7 +465,7 @@ class _SwipeImageViewState extends ConsumerState<SwipeImageView>
       bottomNavigationBar: _localImages.isNotEmpty
           ? Padding(
               padding: EdgeInsets.symmetric(
-                  horizontal: width * 0.05, vertical: height * 0.03),
+                  horizontal: width * 0.01, vertical: height * 0.03),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

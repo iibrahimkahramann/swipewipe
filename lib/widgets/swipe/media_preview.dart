@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:swipewipe/config/theme/custom_theme.dart';
 import 'package:swipewipe/widgets/swipe/video_player_widget.dart';
 
 class MediaPreview extends StatelessWidget {
@@ -78,25 +79,26 @@ class MediaPreview extends StatelessWidget {
           content,
           Positioned(
             top: 12,
-            left: swipeLabelAlignment == Alignment.topLeft ? 24 : null,
-            right: swipeLabelAlignment == Alignment.topRight ? 24 : null,
+            left: swipeLabelAlignment == Alignment.topLeft
+                ? size.width * 0.04
+                : null,
+            right: swipeLabelAlignment == Alignment.topRight
+                ? size.width * 0.04
+                : null,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              padding: EdgeInsets.symmetric(
+                  horizontal: size.width * 0.02, vertical: size.width * 0.02),
               decoration: BoxDecoration(
                 color: Colors.transparent,
-                border: Border.all(color: borderColor, width: 3),
-                borderRadius: BorderRadius.circular(16),
+                border:
+                    Border.all(color: borderColor, width: size.width * 0.012),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: Center(
-                child: Text(
-                  labelText,
-                  style: TextStyle(
-                    color: textColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 22,
-                    letterSpacing: 1.2,
-                  ),
-                ),
+                child: Text(labelText,
+                    style: CustomTheme.textTheme(context)
+                        .bodyLarge
+                        ?.copyWith(color: textColor)),
               ),
             ),
           ),
