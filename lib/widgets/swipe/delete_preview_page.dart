@@ -85,8 +85,9 @@ class DeletePreviewPage extends ConsumerWidget {
                       ref.read(selectedDeleteProvider(listKey).notifier).state =
                           deleteList.map((e) => e.id).toSet();
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content: Text('Bazı fotoğraflar silinemedi!')),
+                        SnackBar(
+                            content:
+                                Text('Some photos could not be deleted!'.tr())),
                       );
                     }
                   },

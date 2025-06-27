@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:swipewipe/config/theme/custom_theme.dart';
@@ -82,7 +83,7 @@ class _MediaPreviewState extends State<MediaPreview> {
       final isDelete = widget.swipeLabel == 'Delete';
       final borderColor = isDelete ? Colors.red : Colors.green;
       final textColor = borderColor;
-      final labelText = isDelete ? 'Delete' : 'Keep';
+      final labelText = isDelete ? 'Delete'.tr() : 'Keep'.tr();
       overlayed = Stack(
         children: [
           overlayed,

@@ -35,11 +35,19 @@
     "OK": "OK",
     "You cannot use without gallery permission": "No puedes usar sin permiso de galería",
     "Give Permission": "Dar Permiso",
-    "App won't work without granting full access.": "La aplicación no funcionará sin otorgar acceso completo.",
+    "App won t work without granting full access.": "La aplicación no funcionará sin otorgar acceso completo.",
     "Review Again": "Revisar de Nuevo",
     "Swipe List Completed": "Lista de Deslizamiento Completada",
     "Thanks for your feedback!": "¡Gracias por tus comentarios!",
     "Please select star.": "Por favor, selecciona una estrella.",
     "Your feedback is important to us!": "¡Tus comentarios son importantes para nosotros!",
-    "Submit": "Enviar"
+    "Submit": "Enviar",
+    "Error occurred": "Error: {}",
+    "No photos in last 7 days": "No hay fotos en los últimos 7 días",
+    "No photos found by month": "No se encontraron fotos por mes",
+    "Some photos could not be deleted!": "¡Algunas fotos no pudieron ser eliminadas!",
+    "Photos": "Fotos",
+    "Saved": "Guardadas",
+    "Space Saved": "Espacio Guardado",
+    "Photos to be deleted": "Fotos a eliminar"
 }

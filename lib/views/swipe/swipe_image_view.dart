@@ -413,7 +413,7 @@ class _SwipeImageViewState extends ConsumerState<SwipeImageView>
                   child: Column(
                     children: [
                       Lottie.asset('assets/icons/tik.json',
-                          height: height * 0.33, width: width * 0.8),
+                          height: height * 0.3, width: width * 0.5),
                       Text(
                         'Swipe List Completed'.tr(),
                         style: Theme.of(context).textTheme.bodyMedium,
@@ -468,7 +468,7 @@ class _SwipeImageViewState extends ConsumerState<SwipeImageView>
                         color: Colors.red,
                       ),
                       label: Text(
-                        '${'View to be Deleted'.tr()} ($deleteCount)',
+                        '${'Photos to be deleted'.tr()} ($deleteCount)',
                         style: CustomTheme.textTheme(context)
                             .bodySmall
                             ?.copyWith(color: Colors.red),
@@ -615,7 +615,7 @@ class _SwipeImageViewState extends ConsumerState<SwipeImageView>
                           foregroundColor: Colors.green,
                           padding:
                               EdgeInsets.symmetric(vertical: height * 0.005)),
-                      child: Text('Keep',
+                      child: Text('Keep'.tr(),
                           style: CustomTheme.textTheme(context)
                               .bodyMedium
                               ?.copyWith(color: Colors.green)),
@@ -632,7 +632,7 @@ class _SwipeImageViewState extends ConsumerState<SwipeImageView>
                           foregroundColor: Colors.red,
                           padding:
                               EdgeInsets.symmetric(vertical: height * 0.005)),
-                      child: Text('Delete',
+                      child: Text('Delete'.tr(),
                           style: CustomTheme.textTheme(context)
                               .bodyMedium
                               ?.copyWith(color: Colors.red)),

@@ -40,10 +40,10 @@ class _OrganizeViewState extends ConsumerState<OrganizeView> {
           children: [
             weeklyMediaAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e, _) => Text('Hata: $e'),
+              error: (e, _) => Text('Error occurred'.tr(args: [e.toString()])),
               data: (weeklyAssets) {
                 if (weeklyAssets.isEmpty) {
-                  return Center(child: Text("No photos in last 7 days"));
+                  return Center(child: Text("No photos in last 7 days".tr()));
                 }
                 return OrganizeWeeklyComponent(
                   height: height,
@@ -80,10 +80,10 @@ class _OrganizeViewState extends ConsumerState<OrganizeView> {
             ),
             monthlyMediaAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e, _) => Center(child: Text('Hata: $e')),
+              error: (e, _) => Center(child: Text('Error occurred'.tr(args: [e.toString()]) )),
               data: (monthlyGroups) {
                 if (monthlyGroups.isEmpty) {
-                  return Center(child: Text("No photos found by month"));
+                  return Center(child: Text("No photos found by month".tr()));
                 }
                 final keys = monthlyGroups.keys;
                 return Column(

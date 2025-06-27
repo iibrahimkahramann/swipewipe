@@ -41,5 +41,13 @@
     "Thanks for your feedback!": "フィードバックありがとうございます！",
     "Please select star.": "星を選択してください。",
     "Your feedback is important to us!": "あなたのフィードバックは私たちにとって重要です！",
-    "Submit": "送信"
+    "Submit": "送信",
+    "Error occurred": "エラーが発生しました: {}",
+    "No photos in last 7 days": "過去7日間の写真はありません",
+    "No photos found by month": "月ごとの写真が見つかりません",
+    "Some photos could not be deleted!": "一部の写真を削除できませんでした！",
+    "Photos": "写真",
+    "Saved": "保存済み",
+    "Space Saved": "保存されたスペース",
+    "Photos to be deleted": "削除する写真"
 }

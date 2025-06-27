@@ -41,5 +41,13 @@
     "Thanks for your feedback!": "Geri bildiriminiz için teşekkürler!",
     "Please select star.": "Lütfen yıldız seçin.",
     "Your feedback is important to us!": "Geri bildiriminiz bizim için önemli!",
-    "Submit": "Gönder"
+    "Submit": "Gönder",
+    "Error occurred": "Hata oluştu: {}",
+    "No photos in last 7 days": "Son 7 günde fotoğraf yok",
+    "No photos found by month": "Aylık fotoğraf bulunamadı",
+    "Some photos could not be deleted!": "Bazı fotoğraflar silinemedi!",
+    "Photos": "Fotoğraflar",
+    "Saved": "Kaydedilenler",
+    "Space Saved": "Kazanılan Alan",
+    "Photos to be deleted": "Silinecek Fotoğraflar"
 }

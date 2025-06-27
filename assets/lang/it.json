@@ -41,5 +41,13 @@
     "Thanks for your feedback!": "Grazie per il tuo feedback!",
     "Please select star.": "Seleziona una stella.",
     "Your feedback is important to us!": "Il tuo feedback è importante per noi!",
-    "Submit": "Invia"
+    "Submit": "Invia",
+    "Error occurred": "Errore: {}",
+    "No photos in last 7 days": "Nessuna foto negli ultimi 7 giorni",
+    "No photos found by month": "Nessuna foto trovata per mese",
+    "Some photos could not be deleted!": "Alcune foto non sono state eliminate!",
+    "Photos": "Foto",
+    "Saved": "Salvate",
+    "Space Saved": "Spazio Salvato",
+    "Photos to be deleted": "Foto da eliminare"
 }

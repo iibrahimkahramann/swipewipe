@@ -41,5 +41,13 @@
     "Thanks for your feedback!": "Спасибо за ваш отзыв!",
     "Please select star.": "Пожалуйста, выберите звезду.",
     "Your feedback is important to us!": "Ваш отзыв важен для нас!",
-    "Submit": "Отправить"
+    "Submit": "Отправить",
+    "Error occurred": "Произошла ошибка: {}",
+    "No photos in last 7 days": "Нет фотографий за последние 7 дней",
+    "No photos found by month": "Нет фотографий по месяцам",
+    "Some photos could not be deleted!": "Некоторые фотографии не удалось удалить!",
+    "Photos": "Фотографии",
+    "Saved": "Сохранено",
+    "Space Saved": "Сэкономленное место",
+    "Photos to be deleted": "Фотографии для удаления"
 }

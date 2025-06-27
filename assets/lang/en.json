@@ -41,5 +41,13 @@
     "Thanks for your feedback!": "Thanks for your feedback!",
     "Please select star.": "Please select star.",
     "Your feedback is important to us!": "Your feedback is important to us!",
-    "Submit": "Submit"
+    "Submit": "Submit",
+    "Error occurred": "Error: {}",
+    "No photos in last 7 days": "No photos in last 7 days",
+    "No photos found by month": "No photos found by month",
+    "Some photos could not be deleted!": "Some photos could not be deleted!",
+    "Photos": "Photos",
+    "Saved": "Saved",
+    "Space Saved": "Space Saved",
+    "Photos to be deleted": "Photos to be deleted"
 }

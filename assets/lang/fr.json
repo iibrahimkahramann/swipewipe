@@ -41,5 +41,13 @@
     "Thanks for your feedback!": "Merci pour vos retours !",
     "Please select star.": "Veuillez sélectionner une étoile.",
     "Your feedback is important to us!": "Vos retours sont importants pour nous !",
-    "Submit": "Soumettre"
+    "Submit": "Soumettre",
+    "Error occurred": "Erreur : {}",
+    "No photos in last 7 days": "Aucune photo des 7 derniers jours",
+    "No photos found by month": "Aucune photo trouvée par mois",
+    "Some photos could not be deleted!": "Certaines photos n'ont pas pu être supprimées !",
+    "Photos": "Photos",
+    "Saved": "Enregistrées",
+    "Space Saved": "Espace Enregistré",
+    "Photos to be deleted": "Photos à supprimer"
 }

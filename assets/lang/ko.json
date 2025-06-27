@@ -41,5 +41,13 @@
     "Thanks for your feedback!": "피드백 감사합니다!",
     "Please select star.": "별을 선택해주세요.",
     "Your feedback is important to us!": "귀하의 피드백은 저희에게 중요합니다!",
-    "Submit": "제출"
+    "Submit": "제출",
+    "Error occurred": "오류 발생: {}",
+    "No photos in last 7 days": "지난 7일간 사진 없음",
+    "No photos found by month": "월별 사진 없음",
+    "Some photos could not be deleted!": "일부 사진을 삭제할 수 없습니다!",
+    "Photos": "사진",
+    "Saved": "저장됨",
+    "Space Saved": "저장된 공간",
+    "Photos to be deleted": "삭제할 사진"
 }

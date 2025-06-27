@@ -90,7 +90,7 @@ class SettingsView extends ConsumerWidget {
               width: width,
               height: height,
               imagePath: 'assets/icons/terms.png',
-              text: 'Term Of Use'.tr(),
+              text: 'Term of Use'.tr(),
               urlPath:
                   'https://sites.google.com/view/swipecleanup-term-of-use/ana-sayfa',
             ),

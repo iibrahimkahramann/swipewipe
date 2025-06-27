@@ -113,7 +113,9 @@ class StatisticsCard extends ConsumerWidget {
         children: [
           Text(
             title,
-            style: CustomTheme.textTheme(context).bodySmall,
+            style: CustomTheme.textTheme(context)
+                .bodySmall
+                ?.copyWith(fontSize: height * 0.015),
             textAlign: TextAlign.center,
           ),
           SizedBox(height: height * 0.005),
