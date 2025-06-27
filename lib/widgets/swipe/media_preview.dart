@@ -1,74 +1,58 @@
-import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:swipewipe/config/theme/custom_theme.dart';
 import 'package:swipewipe/widgets/swipe/video_player_widget.dart';
+import 'package:video_player/video_player.dart'; // VideoPlayerController için
 
 class MediaPreview extends StatelessWidget {
   final AssetEntity media;
   final String? swipeLabel;
   final Alignment? swipeLabelAlignment;
+  final Uint8List? imageBytes; // Resimler için
+  final VideoPlayerController? videoController; // Videolar için
 
   const MediaPreview({
     super.key,
     required this.media,
     this.swipeLabel,
     this.swipeLabelAlignment,
+    this.imageBytes,
+    this.videoController,
   });
-
-  static final Map<String, Uint8List> _thumbnailCache = {};
-  static final Map<String, File> _videoFileCache = {};
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
     Widget content;
-    if (media.type == AssetType.video &&
-        _videoFileCache.containsKey(media.id)) {
-      final file = _videoFileCache[media.id]!;
-      content = VideoPlayerWidget(
-        videoFile: file,
-        width: size.width,
-        height: size.height * 0.99999,
-      );
-    } else if (media.type != AssetType.video &&
-        _thumbnailCache.containsKey(media.id)) {
-      final bytes = _thumbnailCache[media.id]!;
-      content = _buildImageCard(context, bytes, size);
+    if (media.type == AssetType.video) {
+      if (videoController != null && videoController!.value.isInitialized) {
+        content = VideoPlayerWidget(controller: videoController!);
+      } else {
+        content = const Center(child: CircularProgressIndicator());
+      }
     } else {
-      return FutureBuilder(
-        future: media.type == AssetType.video
-            ? media.file
-            : media.thumbnailDataWithSize(const ThumbnailSize(600, 600)),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return SizedBox(
-              height: size.height * 0.02,
-              child: const Center(child: CircularProgressIndicator()),
-            );
-          }
-
-          if (media.type == AssetType.video) {
-            final file = snapshot.data as File;
-            _videoFileCache[media.id] = file;
-            return VideoPlayerWidget(
-              videoFile: file,
-              width: size.width,
-              height: size.height * 0.99999,
-            );
-          } else {
-            final bytes = snapshot.data as Uint8List;
-            _thumbnailCache[media.id] = bytes;
-            return _buildImageCard(context, bytes, size);
-          }
-        },
-      );
+      if (imageBytes != null) {
+        content = Image.memory(
+          imageBytes!,
+          fit: BoxFit.cover,
+          width: double.infinity,
+          height: double.infinity,
+        );
+      } else {
+        content = const Center(child: CircularProgressIndicator());
+      }
     }
 
     // Overlay label if provided
-    Widget overlayed = content;
+    Widget overlayed = Card(
+      elevation: 6,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      clipBehavior: Clip.antiAlias,
+      child: content,
+    );
+
     if (swipeLabel != null && swipeLabelAlignment != null) {
       final isDelete = swipeLabel == 'Delete';
       final borderColor = isDelete ? Colors.red : Colors.green;
@@ -76,7 +60,7 @@ class MediaPreview extends StatelessWidget {
       final labelText = isDelete ? 'Delete' : 'Keep';
       overlayed = Stack(
         children: [
-          content,
+          overlayed,
           Positioned(
             top: 12,
             left: swipeLabelAlignment == Alignment.topLeft
@@ -106,26 +90,5 @@ class MediaPreview extends StatelessWidget {
       );
     }
     return overlayed;
-  }
-
-  Widget _buildImageCard(BuildContext context, Uint8List bytes, Size size) {
-    return Card(
-      elevation: 6,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Expanded(
-            child: Image.memory(
-              bytes,
-              height: size.height * 0.999,
-              width: double.infinity,
-              fit: BoxFit.cover,
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }

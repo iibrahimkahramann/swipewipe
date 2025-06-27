@@ -21,6 +21,7 @@ class _AlbumsViewState extends ConsumerState<AlbumsView> {
     final albumsWithPhotosAsync = ref.watch(albumsWithPhotosProvider);
 
     return Scaffold(
+      extendBodyBehindAppBar: false,
       appBar: CustomAppBar(),
       body: Padding(
         padding: EdgeInsets.symmetric(

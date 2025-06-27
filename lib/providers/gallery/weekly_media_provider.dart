@@ -42,14 +42,16 @@ final weeklyMediaProvider = FutureProvider<List<AssetEntity>>((ref) async {
     if (count == 0) continue;
     final images = await album.getAssetListRange(start: 0, end: count);
     for (final image in images) {
-      try {
-        final file = await image.originFile;
-        if (file == null || !(await file.exists())) {
+      if (image.type == AssetType.image) {
+        try {
+          final file = await image.originFile;
+          if (file == null || !(await file.exists())) {
+            continue;
+          }
+          recentImages.add(image);
+        } catch (_) {
           continue;
         }
-        recentImages.add(image);
-      } catch (_) {
-        continue;
       }
     }
   }

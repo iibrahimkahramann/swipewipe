@@ -24,7 +24,11 @@ final monthlyMediaProvider =
     final count = await album.assetCountAsync;
     if (count == 0) continue;
     final images = await album.getAssetListRange(start: 0, end: count);
-    allAssets.addAll(images);
+    for (final asset in images) {
+      if (asset.type == AssetType.image) {
+        allAssets.add(asset);
+      }
+    }
   }
 
   // 2. Benzersizleştir (id'ye göre)
@@ -43,12 +47,21 @@ final monthlyMediaProvider =
     }
   }
 
-  // 3. Grupla
-  Map<String, List<AssetEntity>> monthlyGroups = {};
+  // 3. Grupla (DateTime anahtar ile)
+  Map<DateTime, List<AssetEntity>> monthlyGroups = {};
   for (final asset in filteredAssets) {
     final date = asset.createDateTime;
-    final key = DateFormat('MMMM yyyy').format(date);
+    final key = DateTime(date.year, date.month);
     monthlyGroups.putIfAbsent(key, () => []).add(asset);
   }
-  return monthlyGroups;
+
+  // Anahtarları (ayları) yeni aya en yakın olacak şekilde sırala
+  final sortedKeys = monthlyGroups.keys.toList()
+    ..sort((a, b) => b.compareTo(a)); // Yeni ay en üstte
+  final sortedMonthlyGroups = <String, List<AssetEntity>>{};
+  for (final key in sortedKeys) {
+    final keyStr = DateFormat('MMMM yyyy').format(key);
+    sortedMonthlyGroups[keyStr] = monthlyGroups[key]!;
+  }
+  return sortedMonthlyGroups;
 });

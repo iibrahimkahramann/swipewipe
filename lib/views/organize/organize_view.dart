@@ -29,6 +29,7 @@ class _OrganizeViewState extends ConsumerState<OrganizeView> {
     final monthlyMediaAsync = ref.watch(monthlyMediaProvider);
 
     return Scaffold(
+      extendBodyBehindAppBar: false,
       appBar: CustomAppBar(),
       body: Padding(
         padding: EdgeInsets.symmetric(
@@ -84,8 +85,7 @@ class _OrganizeViewState extends ConsumerState<OrganizeView> {
                 if (monthlyGroups.isEmpty) {
                   return Center(child: Text("No photos found by month"));
                 }
-                final keys = monthlyGroups.keys.toList()
-                  ..sort((a, b) => b.compareTo(a)); // Yeni ay en üstte
+                final keys = monthlyGroups.keys;
                 return Column(
                   children: keys.map((monthTitle) {
                     final photos = monthlyGroups[monthTitle]!;

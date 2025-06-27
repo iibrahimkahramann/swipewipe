@@ -8,10 +8,8 @@ final mediaProvider = FutureProvider<List<AssetEntity>>((ref) async {
     return [];
   }
 
-  final albums = await PhotoManager.getAssetPathList(
-    onlyAll: true,
-    type: RequestType.all,
-  );
+  final albums =
+      await PhotoManager.getAssetPathList(onlyAll: true, type: RequestType.all);
 
   final recentAlbum = albums.first;
 
