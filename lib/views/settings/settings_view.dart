@@ -1,9 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:swipewipe/components/settings/app_store_component.dart';
 import 'package:swipewipe/components/settings/default_setting_container.dart';
+import 'package:swipewipe/components/settings/statistics_card.dart';
 import 'package:swipewipe/config/bar/appbar.dart';
 import 'package:swipewipe/config/bar/navbar.dart';
 import 'package:swipewipe/config/functions/rc_paywall.dart';
@@ -21,7 +21,7 @@ class SettingsView extends ConsumerWidget {
 
     return Scaffold(
       appBar: CustomAppBar(),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(
           horizontal: width * 0.03,
           vertical: height * 0.02,
@@ -33,6 +33,10 @@ class SettingsView extends ConsumerWidget {
               'Settings'.tr(),
               style: CustomTheme.textTheme(context).bodyMedium,
             ),
+            SizedBox(
+              height: height * 0.01,
+            ),
+            StatisticsCard(),
             SizedBox(
               height: height * 0.01,
             ),
@@ -71,40 +75,6 @@ class SettingsView extends ConsumerWidget {
             SizedBox(
               height: height * 0.01,
             ),
-            GestureDetector(
-              onTap: () {
-                context.go('/statistics');
-              },
-              child: Container(
-                width: width,
-                height: height * 0.065,
-                decoration: BoxDecoration(
-                  color: CustomTheme.secondaryColor,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.only(left: width * 0.05),
-                  child: Row(
-                    children: [
-                      Image.asset(
-                        'assets/icons/stats.png',
-                        width: width * 0.06,
-                      ),
-                      SizedBox(
-                        width: width * 0.03,
-                      ),
-                      Text(
-                        'Statistics'.tr(),
-                        style: CustomTheme.textTheme(context).bodySmall,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(
-              height: height * 0.01,
-            ),
             DefaultSettingContainer(
               width: width,
               height: height,
@@ -134,13 +104,6 @@ class SettingsView extends ConsumerWidget {
                   'https://apps.apple.com/app/6747386188?action=write-review',
               imagePath: 'assets/icons/rate_us.png',
               title: 'Rate Us'.tr(),
-            ),
-            SizedBox(
-              height: height * 0.01,
-            ),
-            Text(
-              'Our Apps'.tr(),
-              style: CustomTheme.textTheme(context).bodyMedium,
             ),
             SizedBox(
               height: height * 0.01,

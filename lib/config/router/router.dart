@@ -7,7 +7,6 @@ import 'package:swipewipe/views/onboarding/onboarding_view.dart';
 import 'package:swipewipe/views/organize/organize_view.dart';
 import 'package:swipewipe/views/settings/settings_view.dart';
 import 'package:swipewipe/views/splash/splash_view.dart';
-import 'package:swipewipe/views/statistics/statistisc_view.dart';
 import 'package:swipewipe/views/swipe/swipe_image_view.dart';
 
 export 'package:go_router/go_router.dart' show GoRouter;
@@ -59,11 +58,6 @@ final router = GoRouter(
       path: '/organize',
       pageBuilder: (context, state) =>
           fadeScalePage(child: OrganizeView(), state: state),
-    ),
-    GoRoute(
-      path: '/statistics',
-      pageBuilder: (context, state) =>
-          fadeScalePage(child: StatistiscView(), state: state),
     ),
     GoRoute(
       path: '/settings',
