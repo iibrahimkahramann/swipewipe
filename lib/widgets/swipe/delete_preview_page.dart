@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:swipewipe/config/theme/custom_theme.dart';
-import 'package:swipewipe/widgets/swipe/media_preview.dart';
 import 'package:swipewipe/providers/swipe/swipe_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:swipewipe/widgets/swipe/delete_alert_widget.dart';
+import 'dart:typed_data';
 
 class DeletePreviewPage extends ConsumerWidget {
   final List<AssetEntity> deleteList;
@@ -59,7 +59,9 @@ class DeletePreviewPage extends ConsumerWidget {
                         .deleteWithIds(toDelete.map((e) => e.id).toList());
                     final notifier = ref.read(deleteMapProvider.notifier);
                     for (final asset in toDelete) {
-                      notifier.remove(listKey, asset);
+                      if (deletedIds.contains(asset.id)) {
+                        notifier.remove(listKey, asset);
+                      }
                     }
                     ref.read(selectedDeleteProvider(listKey).notifier).state =
                         toKeep.map((e) => e.id).toSet();
@@ -79,13 +81,19 @@ class DeletePreviewPage extends ConsumerWidget {
                         ),
                       );
                     } else {
+                      // Hiçbir fotoğrafı silme, tüm deleteList'i tekrar seçili yap
+                      ref.read(selectedDeleteProvider(listKey).notifier).state =
+                          deleteList.map((e) => e.id).toSet();
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                             content: Text('Bazı fotoğraflar silinemedi!')),
                       );
                     }
                   },
-            icon: Icon(Icons.delete),
+            icon: Image.asset(
+              'assets/icons/delete.png',
+              width: width * 0.07,
+            ),
           ),
         ],
       ),
@@ -121,30 +129,47 @@ class DeletePreviewPage extends ConsumerWidget {
                     }
                     notifier.state = current;
                   },
-                  child: Stack(
-                    children: [
-                      MediaPreview(media: asset),
-                      if (isSelected)
-                        Positioned(
-                          top: width * 0.02,
-                          right: width * 0.02,
-                          child: Icon(
-                            CupertinoIcons.check_mark_circled_solid,
-                            color: CupertinoColors.activeBlue,
-                            size: width * 0.06,
+                  child: FutureBuilder<Uint8List?>(
+                    future: asset
+                        .thumbnailDataWithSize(const ThumbnailSize(300, 300)),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      return Stack(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.memory(
+                              snapshot.data!,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              height: double.infinity,
+                            ),
                           ),
-                        ),
-                      if (!isSelected)
-                        Positioned(
-                          top: width * 0.02,
-                          right: width * 0.02,
-                          child: Icon(
-                            CupertinoIcons.circle,
-                            color: CupertinoColors.systemGrey,
-                            size: width * 0.06,
-                          ),
-                        ),
-                    ],
+                          if (isSelected)
+                            Positioned(
+                              top: width * 0.02,
+                              right: width * 0.02,
+                              child: Icon(
+                                CupertinoIcons.check_mark_circled_solid,
+                                color: CupertinoColors.activeBlue,
+                                size: width * 0.06,
+                              ),
+                            ),
+                          if (!isSelected)
+                            Positioned(
+                              top: width * 0.02,
+                              right: width * 0.02,
+                              child: Icon(
+                                CupertinoIcons.circle,
+                                color: CupertinoColors.systemGrey,
+                                size: width * 0.06,
+                              ),
+                            ),
+                        ],
+                      );
+                    },
                   ),
                 );
               },

@@ -36,30 +36,30 @@ class CustomNavBar extends StatelessWidget {
       onTap: (index) => _onItemTapped(index, context),
       items: [
         BottomNavigationBarItem(
-          icon: Icon(
-            Icons.image,
-            size: width * 0.06,
+          icon: Image.asset(
+            'assets/icons/organize.png',
             color: _calculateSelectedIndex(currentLocation) == 0
                 ? CustomTheme.backgroundColor
                 : Colors.white,
+            width: width * 0.07,
           ),
         ),
         BottomNavigationBarItem(
-          icon: Icon(
-            Icons.photo_album_sharp,
-            size: width * 0.06,
+          icon: Image.asset(
+            'assets/icons/albums.png',
             color: _calculateSelectedIndex(currentLocation) == 1
                 ? CustomTheme.backgroundColor
                 : Colors.white,
+            width: width * 0.07,
           ),
         ),
         BottomNavigationBarItem(
-          icon: Icon(
-            Icons.settings,
-            size: width * 0.06,
+          icon: Image.asset(
+            'assets/icons/settings.png',
             color: _calculateSelectedIndex(currentLocation) == 2
                 ? CustomTheme.backgroundColor
                 : Colors.white,
+            width: width * 0.07,
           ),
         ),
       ],

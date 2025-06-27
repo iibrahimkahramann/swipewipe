@@ -5,7 +5,7 @@ import 'package:swipewipe/config/theme/custom_theme.dart';
 import 'package:swipewipe/widgets/swipe/video_player_widget.dart';
 import 'package:video_player/video_player.dart'; // VideoPlayerController için
 
-class MediaPreview extends StatelessWidget {
+class MediaPreview extends StatefulWidget {
   final AssetEntity media;
   final String? swipeLabel;
   final Alignment? swipeLabelAlignment;
@@ -22,27 +22,52 @@ class MediaPreview extends StatelessWidget {
   });
 
   @override
+  State<MediaPreview> createState() => _MediaPreviewState();
+}
+
+class _MediaPreviewState extends State<MediaPreview> {
+  @override
+  void didUpdateWidget(covariant MediaPreview oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Eğer yeni preload tamamlandıysa, widget güncellensin
+    if (widget.media.id != oldWidget.media.id) {
+      setState(() {});
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
     Widget content;
-    if (media.type == AssetType.video) {
-      if (videoController != null && videoController!.value.isInitialized) {
-        content = VideoPlayerWidget(controller: videoController!);
+    bool needsRetry = false;
+    if (widget.media.type == AssetType.video) {
+      if (widget.videoController != null &&
+          widget.videoController!.value.isInitialized) {
+        content = VideoPlayerWidget(controller: widget.videoController!);
       } else {
         content = const Center(child: CircularProgressIndicator());
+        needsRetry = true;
       }
     } else {
-      if (imageBytes != null) {
+      if (widget.imageBytes != null) {
         content = Image.memory(
-          imageBytes!,
+          widget.imageBytes!,
           fit: BoxFit.cover,
           width: double.infinity,
           height: double.infinity,
         );
       } else {
         content = const Center(child: CircularProgressIndicator());
+        needsRetry = true;
       }
+    }
+
+    // Retry mekanizması: preload tamamlanmadıysa kısa bir gecikmeyle tekrar build et
+    if (needsRetry) {
+      Future.delayed(const Duration(milliseconds: 100), () {
+        if (mounted) setState(() {});
+      });
     }
 
     // Overlay label if provided
@@ -53,8 +78,8 @@ class MediaPreview extends StatelessWidget {
       child: content,
     );
 
-    if (swipeLabel != null && swipeLabelAlignment != null) {
-      final isDelete = swipeLabel == 'Delete';
+    if (widget.swipeLabel != null && widget.swipeLabelAlignment != null) {
+      final isDelete = widget.swipeLabel == 'Delete';
       final borderColor = isDelete ? Colors.red : Colors.green;
       final textColor = borderColor;
       final labelText = isDelete ? 'Delete' : 'Keep';
@@ -63,10 +88,10 @@ class MediaPreview extends StatelessWidget {
           overlayed,
           Positioned(
             top: 12,
-            left: swipeLabelAlignment == Alignment.topLeft
+            left: widget.swipeLabelAlignment == Alignment.topLeft
                 ? size.width * 0.04
                 : null,
-            right: swipeLabelAlignment == Alignment.topRight
+            right: widget.swipeLabelAlignment == Alignment.topRight
                 ? size.width * 0.04
                 : null,
             child: Container(

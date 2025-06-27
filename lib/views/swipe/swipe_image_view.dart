@@ -41,6 +41,9 @@ final listCompletedProvider =
 final listPendingProvider =
     StateProvider.family<bool, String>((ref, listKey) => false);
 
+final hasGoneBackProvider =
+    StateProvider.family<bool, String>((ref, listKey) => false);
+
 class SwipeImageView extends ConsumerStatefulWidget {
   final String? listKey;
   final List<AssetEntity>? initialList;
@@ -194,6 +197,8 @@ class _SwipeImageViewState extends ConsumerState<SwipeImageView>
 
     final newIndex = index + 1;
     ref.read(swipeIndexProvider(listKey).notifier).setIndex(newIndex);
+
+    ref.read(hasGoneBackProvider(listKey).notifier).state = false;
 
     Future.microtask(() async {
       await _saveCurrentIndex(newIndex);
@@ -362,6 +367,7 @@ class _SwipeImageViewState extends ConsumerState<SwipeImageView>
     final currentIndex = ref.watch(swipeIndexProvider(listKey));
     final isListCompleted = ref.watch(listCompletedProvider(listKey));
     final isPendingComplete = ref.watch(listPendingProvider(listKey));
+    final hasGoneBack = ref.watch(hasGoneBackProvider(listKey));
 
     // Fotoğraf listesi güncellenirse local'i yenile
     if (!_listEquals(_localImages, images)) {
@@ -456,8 +462,9 @@ class _SwipeImageViewState extends ConsumerState<SwipeImageView>
                                 ),
                               );
                             },
-                      icon: Icon(
-                        Icons.delete,
+                      icon: Image.asset(
+                        'assets/icons/delete.png',
+                        width: width * 0.06,
                         color: Colors.red,
                       ),
                       label: Text(
@@ -501,6 +508,26 @@ class _SwipeImageViewState extends ConsumerState<SwipeImageView>
           '${currentIndex + 1} / ${_localImages.length}',
           style: CustomTheme.textTheme(context).bodyLarge,
         ),
+        actions: [
+          IconButton(
+            icon: Image.asset(
+              'assets/icons/swipe_back.png',
+              width: width * 0.07,
+            ),
+            onPressed: currentIndex > 0 && !hasGoneBack
+                ? () {
+                    ref
+                        .read(swipeIndexProvider(listKey).notifier)
+                        .setIndex(currentIndex - 1);
+                    _playOnlyCurrentVideo();
+                    ref.read(hasGoneBackProvider(listKey).notifier).state =
+                        true;
+                  }
+                : () async {
+                    await RevenueCatService.showPaywallIfNeeded();
+                  },
+          ),
+        ],
       ),
       body: Center(
         child: SizedBox(
