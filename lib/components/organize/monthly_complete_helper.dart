@@ -43,4 +43,10 @@ class MonthlyCompleteHelper {
     final key = getPendingKey(assets);
     await prefs.remove(key);
   }
+
+  static Future<void> clearCompleted(List<AssetEntity> assets) async {
+    final prefs = await SharedPreferences.getInstance();
+    final key = getListKey(assets);
+    await prefs.remove(key);
+  }
 }

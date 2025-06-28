@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -5,6 +6,7 @@ import 'package:photo_manager/photo_manager.dart';
 import 'package:swipewipe/config/theme/custom_theme.dart';
 import 'package:swipewipe/providers/swipe/swipe_provider.dart';
 import 'monthly_complete_helper.dart';
+import 'swipe_complete_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AlbumsContainerComponent extends ConsumerStatefulWidget {
@@ -56,7 +58,9 @@ class _AlbumsContainerComponentState
 
   @override
   Widget build(BuildContext context) {
-    final showCheck = _isCompleted || _isPending;
+    // Her build'de durumu güncelle
+    _checkStatus();
+    //final showCheck = _isCompleted || _isPending;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -64,7 +68,82 @@ class _AlbumsContainerComponentState
         SizedBox(height: widget.height * 0.01),
         GestureDetector(
           onTap: () async {
-            if (_isCompleted) return;
+            await _checkStatus(); // En güncel durumu kontrol et
+            if (_isCompleted) {
+              // Tamamlandıysa bottom sheet aç
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: CustomTheme.backgroundColor,
+                builder: (context) {
+                  final width = MediaQuery.of(context).size.width;
+                  final height = MediaQuery.of(context).size.height;
+                  return Padding(
+                    padding: MediaQuery.of(context).viewInsets,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).dialogBackgroundColor,
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(24),
+                          topRight: Radius.circular(24),
+                        ),
+                      ),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: width * 0.07,
+                        vertical: height * 0.03,
+                      ),
+                      constraints: BoxConstraints(
+                        minHeight: height * 0.22,
+                        maxHeight: height * 0.5,
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.check_circle, color: Colors.green, size: width * 0.13),
+                          SizedBox(height: height * 0.02),
+                          Text(
+                            'Swipe List Completed'.tr(),
+                            style: CustomTheme.textTheme(context).bodyMedium,
+                            textAlign: TextAlign.center,
+                          ),
+                          SizedBox(height: height * 0.02),
+                          SizedBox(
+                            width: double.infinity,
+                            child: SwipeCompleteButton(
+                              onPressed: () async {
+                                await MonthlyCompleteHelper.clearPending(widget.photoList);
+                                await MonthlyCompleteHelper.clearCompleted(widget.photoList); // Tamamlanma durumunu da sil
+                                if (!mounted) return;
+                                setState(() {
+                                  _isCompleted = false;
+                                  _isPending = false;
+                                });
+                                Navigator.of(context).pop();
+                                // Swipe ekranını başlat
+                                ref.read(swipeImagesProvider.notifier).setImagesLazy(widget.photoList);
+                                final filteredList = ref.read(swipeImagesProvider);
+                                ref.read(swipeCurrentIndexProvider.notifier).state = 0;
+                                ref.read(swipePendingDeleteProvider.notifier).clear();
+                                context.push(
+                                  '/swipe',
+                                  extra: {
+                                    'mediaList': filteredList,
+                                    'initialIndex': 0,
+                                    'listKey': widget.albumsTitle,
+                                  },
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+              return;
+            }
+            // Tamamlanmadıysa swipe ekranına git
             ref
                 .read(swipeImagesProvider.notifier)
                 .setImagesLazy(widget.photoList);
@@ -109,7 +188,7 @@ class _AlbumsContainerComponentState
                       height: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  else if (showCheck)
+                  else if (_isCompleted)
                     const Icon(Icons.check_circle, color: Colors.green, size: 20)
                   else
                     Text(

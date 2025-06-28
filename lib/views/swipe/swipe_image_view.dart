@@ -9,7 +9,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swipewipe/config/theme/custom_theme.dart';
 import 'package:swipewipe/providers/swipe/swipe_provider.dart';
 import 'package:swipewipe/widgets/swipe/media_preview.dart';
-import 'package:swipewipe/components/organize/swipe_complete_button.dart';
 import 'package:swipewipe/components/organize/monthly_complete_helper.dart';
 import 'package:swipewipe/widgets/swipe/delete_preview_page.dart';
 import 'package:swipewipe/providers/premium/premium_provider.dart';
@@ -387,6 +386,7 @@ class _SwipeImageViewState extends ConsumerState<SwipeImageView>
           _onListPending();
           await MonthlyCompleteHelper.setListPending(_localImages);
         }
+        await MonthlyCompleteHelper.completeList(_localImages); // Listenin tamamlandığını kaydet
       });
     }
     if (currentIndex >= _localImages.length ||
@@ -423,18 +423,6 @@ class _SwipeImageViewState extends ConsumerState<SwipeImageView>
                   ),
                 ),
                 SizedBox(height: height * 0.01),
-                if (!isListCompleted)
-                  SwipeCompleteButton(
-                    onPressed: () async {
-                      await MonthlyCompleteHelper.clearPending(_localImages);
-                      ref
-                          .read(swipeIndexProvider(listKey).notifier)
-                          .setIndex(0);
-                      ref.read(listPendingProvider(listKey).notifier).state =
-                          false;
-                      _playOnlyCurrentVideo();
-                    },
-                  ),
                 Consumer(builder: (context, ref, _) {
                   final deleteCount =
                       ref.watch(deleteMapProvider)[listKey]?.length ?? 0;
