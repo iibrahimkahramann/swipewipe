@@ -1,64 +1,94 @@
+import 'dart:typed_data';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:photo_manager/photo_manager.dart';
 
-String getYearWeek(DateTime date) {
-  final firstDayOfYear = DateTime(date.year, 1, 1);
+// State class for weekly media
+class WeeklyMediaState {
+  final List<AssetEntity> assets;
+  final Map<String, Uint8List> thumbnails;
+  final bool isLoading;
 
-  final firstWeekday = firstDayOfYear.weekday;
+  WeeklyMediaState({
+    this.assets = const [],
+    this.thumbnails = const {},
+    this.isLoading = true,
+  });
 
-  final dayOfYear = date.difference(firstDayOfYear).inDays + 1;
-
-  // ISO 8601 haftası hesaplama
-  final weekNumber = ((dayOfYear + firstWeekday - 1) / 7).ceil();
-
-  return '${date.year}-W$weekNumber';
+  WeeklyMediaState copyWith({
+    List<AssetEntity>? assets,
+    Map<String, Uint8List>? thumbnails,
+    bool? isLoading,
+  }) {
+    return WeeklyMediaState(
+      assets: assets ?? this.assets,
+      thumbnails: thumbnails ?? this.thumbnails,
+      isLoading: isLoading ?? this.isLoading,
+    );
+  }
 }
 
-final weeklyMediaProvider = FutureProvider<List<AssetEntity>>((ref) async {
-  final permission = await PhotoManager.requestPermissionExtend();
-  if (!permission.isAuth) {
-    throw Exception('Galeri erişim izni verilmedi.');
+// StateNotifier for weekly media
+class WeeklyMediaNotifier extends StateNotifier<WeeklyMediaState> {
+  WeeklyMediaNotifier() : super(WeeklyMediaState()) {
+    _loadWeeklyMediaMetadata();
   }
 
-  final now = DateTime.now();
-  final sevenDaysAgo = now.subtract(const Duration(days: 7));
+  Future<void> _loadWeeklyMediaMetadata() async {
+    final permission = await PhotoManager.requestPermissionExtend();
+    if (!permission.isAuth) {
+      state = state.copyWith(isLoading: false);
+      return;
+    }
 
-  final List<AssetPathEntity> albums = await PhotoManager.getAssetPathList(
-    type: RequestType.image,
-    filterOption: FilterOptionGroup(
-      orders: [
-        const OrderOption(type: OrderOptionType.createDate, asc: false),
-      ],
-      createTimeCond: DateTimeCond(
-        min: sevenDaysAgo,
-        max: now,
+    final now = DateTime.now();
+    final sevenDaysAgo = now.subtract(const Duration(days: 7));
+
+    // This directly gets a special "album" that contains only assets matching the filter.
+    final List<AssetPathEntity> paths = await PhotoManager.getAssetPathList(
+      type: RequestType.image,
+      filterOption: FilterOptionGroup(
+        orders: [
+          const OrderOption(type: OrderOptionType.createDate, asc: false),
+        ],
+        createTimeCond: DateTimeCond(
+          min: sevenDaysAgo,
+          max: now,
+        ),
       ),
-    ),
-  );
+    );
 
-  List<AssetEntity> recentImages = [];
-  for (final album in albums) {
-    final count = await album.assetCountAsync;
-    if (count == 0) continue;
-    final images = await album.getAssetListRange(start: 0, end: count);
-    for (final image in images) {
-      if (image.type == AssetType.image) {
-        try {
-          final file = await image.originFile;
-          if (file == null || !(await file.exists())) {
-            continue;
-          }
-          recentImages.add(image);
-        } catch (_) {
-          continue;
-        }
-      }
+    if (paths.isEmpty) {
+      state = state.copyWith(isLoading: false, assets: []);
+      return;
+    }
+
+    // The first path entity is the virtual album containing our filtered assets.
+    final AssetPathEntity mainPath = paths.first;
+    final List<AssetEntity> recentAssets = await mainPath.getAssetListRange(
+      start: 0,
+      end: await mainPath.assetCountAsync,
+    );
+
+    state = state.copyWith(assets: recentAssets, isLoading: false);
+  }
+
+  Future<void> loadThumbnail(AssetEntity asset) async {
+    if (state.thumbnails.containsKey(asset.id)) {
+      return;
+    }
+
+    final thumbData = await asset.thumbnailDataWithSize(const ThumbnailSize(200, 200));
+
+    if (thumbData != null) {
+      final newThumbnails = Map<String, Uint8List>.from(state.thumbnails);
+      newThumbnails[asset.id] = thumbData;
+      state = state.copyWith(thumbnails: newThumbnails);
     }
   }
-  // Benzersizleştir (id'ye göre)
-  final uniqueAssets = <String, AssetEntity>{};
-  for (final asset in recentImages) {
-    uniqueAssets[asset.id] = asset;
-  }
-  return uniqueAssets.values.toList();
+}
+
+// The provider for weekly media
+final weeklyMediaProvider =
+    StateNotifierProvider<WeeklyMediaNotifier, WeeklyMediaState>((ref) {
+  return WeeklyMediaNotifier();
 });

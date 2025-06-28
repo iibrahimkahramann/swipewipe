@@ -1,82 +1,84 @@
+import 'dart:typed_data';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:photo_manager/photo_manager.dart';
 
-final albumsWithPhotosProvider =
-    FutureProvider<Map<String, List<AssetEntity>>>((ref) async {
-  final permission = await PhotoManager.requestPermissionExtend();
-  if (!permission.isAuth) {
-    throw Exception('Galeri erişim izni verilmedi.');
+// State for albums
+class AlbumsState {
+  final List<AssetPathEntity> albums;
+  final Map<String, Uint8List> thumbnails; // Cache for album thumbnails
+  final bool isLoading;
+
+  AlbumsState({
+    this.albums = const [],
+    this.thumbnails = const {},
+    this.isLoading = true,
+  });
+
+  AlbumsState copyWith({
+    List<AssetPathEntity>? albums,
+    Map<String, Uint8List>? thumbnails,
+    bool? isLoading,
+  }) {
+    return AlbumsState(
+      albums: albums ?? this.albums,
+      thumbnails: thumbnails ?? this.thumbnails,
+      isLoading: isLoading ?? this.isLoading,
+    );
+  }
+}
+
+// StateNotifier for albums
+class AlbumsNotifier extends StateNotifier<AlbumsState> {
+  AlbumsNotifier() : super(AlbumsState()) {
+    _loadAlbums();
   }
 
-  final List<AssetPathEntity> albums = await PhotoManager.getAssetPathList(
-    type: RequestType.image,
-    filterOption: FilterOptionGroup(
-      orders: [
-        const OrderOption(type: OrderOptionType.createDate, asc: false),
-      ],
-    ),
-  );
-
-  final List<AssetPathEntity> videoAlbums = await PhotoManager.getAssetPathList(
-    type: RequestType.video,
-    filterOption: FilterOptionGroup(
-      orders: [
-        const OrderOption(type: OrderOptionType.createDate, asc: false),
-      ],
-    ),
-  );
-
-  Map<String, List<AssetEntity>> albumPhotos = {};
-  for (final album in albums) {
-    final count = await album.assetCountAsync;
-    if (count == 0) continue;
-    final images = await album.getAssetListRange(start: 0, end: count);
-    final uniqueAssets = <String, AssetEntity>{};
-    for (final image in images) {
-      if (image.type == AssetType.image) {
-        uniqueAssets[image.id] = image;
-      }
+  Future<void> _loadAlbums() async {
+    final permission = await PhotoManager.requestPermissionExtend();
+    if (!permission.isAuth) {
+      state = state.copyWith(isLoading: false);
+      return;
     }
-    final filteredImages = <AssetEntity>[];
-    for (final asset in uniqueAssets.values) {
-      try {
-        final file = await asset.originFile;
-        if (file == null || !(await file.exists())) {
-          continue;
-        }
-        filteredImages.add(asset);
-      } catch (_) {
-        continue;
-      }
-    }
-    albumPhotos[album.name] = filteredImages;
-  }
 
-  for (final album in videoAlbums) {
-    if (album.name.toLowerCase() == 'videos') {
+    // Fetch all albums (both image and video) in one go
+    final albums = await PhotoManager.getAssetPathList(
+      type: RequestType.common, // Fetches both image and video
+      hasAll: true,
+    );
+
+    // Filter out empty albums
+    final nonEmptyAlbums = <AssetPathEntity>[];
+    for (final album in albums) {
       final count = await album.assetCountAsync;
-      if (count == 0) continue;
-      final videos = await album.getAssetListRange(start: 0, end: count);
-      final uniqueVideos = <String, AssetEntity>{};
-      for (final video in videos) {
-        if (video.type == AssetType.video) {
-          uniqueVideos[video.id] = video;
-        }
+      if (count > 0) {
+        nonEmptyAlbums.add(album);
       }
-      final filteredVideos = <AssetEntity>[];
-      for (final asset in uniqueVideos.values) {
-        try {
-          final file = await asset.originFile;
-          if (file == null || !(await file.exists())) {
-            continue;
-          }
-          filteredVideos.add(asset);
-        } catch (_) {
-          continue;
-        }
-      }
-      albumPhotos[album.name] = filteredVideos;
+    }
+
+    state = state.copyWith(albums: nonEmptyAlbums, isLoading: false);
+  }
+
+  // Lazily load the thumbnail for a specific album
+  Future<void> loadAlbumThumbnail(AssetPathEntity album) async {
+    final count = await album.assetCountAsync;
+    if (state.thumbnails.containsKey(album.id) || count == 0) {
+      return;
+    }
+
+    // Get the very first asset of the album to use as a thumbnail
+    final firstAsset = (await album.getAssetListRange(start: 0, end: 1)).first;
+
+    final thumbData = await firstAsset.thumbnailDataWithSize(const ThumbnailSize(200, 200));
+
+    if (thumbData != null) {
+      final newThumbnails = Map<String, Uint8List>.from(state.thumbnails);
+      newThumbnails[album.id] = thumbData;
+      state = state.copyWith(thumbnails: newThumbnails);
     }
   }
-  return albumPhotos;
+}
+
+// The provider for albums
+final albumsProvider = StateNotifierProvider<AlbumsNotifier, AlbumsState>((ref) {
+  return AlbumsNotifier();
 });
