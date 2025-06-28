@@ -11,9 +11,14 @@ class VideoPlayerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: controller.value.aspectRatio,
-      child: VideoPlayer(controller),
+    return Center(
+      child: AspectRatio(
+        aspectRatio: controller.value.aspectRatio,
+        child: Container(
+          color: Colors.black,
+          child: VideoPlayer(controller),
+        ),
+      ),
     );
   }
 }
