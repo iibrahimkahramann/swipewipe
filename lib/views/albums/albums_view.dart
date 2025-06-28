@@ -13,9 +13,13 @@ class AlbumsView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    print('AlbumsView: build called.');
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
     final albumsState = ref.watch(albumsProvider);
+
+    print('AlbumsView: albumsState.isLoading: ${albumsState.isLoading}');
+    print('AlbumsView: albumsState.albums.isNotEmpty: ${albumsState.albums.isNotEmpty}');
 
     return Scaffold(
       extendBodyBehindAppBar: false,
@@ -28,21 +32,22 @@ class AlbumsView extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Albums'.tr(),
-              style: CustomTheme.textTheme(context).bodyMedium,
-            ),
             Expanded(
               child: albumsState.isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : albumsState.albums.isEmpty
                       ? Center(child: Text("No albums found".tr()))
-                      : ListView.builder(
-                          itemCount: albumsState.albums.length,
-                          itemBuilder: (context, index) {
-                            final album = albumsState.albums[index];
-                            return AlbumListItem(album: album);
-                          },
+                      : ListView(
+                          children: [
+                            Text(
+                              'Albums'.tr(),
+                              style: CustomTheme.textTheme(context).bodyMedium,
+                            ),
+                            SizedBox(height: height * 0.0002),
+                            ...albumsState.albums.map((album) {
+                              return AlbumListItem(key: ValueKey(album.id), album: album);
+                            }).toList(),
+                          ],
                         ),
             ),
           ],

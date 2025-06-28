@@ -65,9 +65,10 @@ class _AlbumsContainerComponentState
         GestureDetector(
           onTap: () async {
             if (_isCompleted) return;
-            await ref
+            ref
                 .read(swipeImagesProvider.notifier)
-                .setImagesFiltered(widget.photoList);
+                .setImagesLazy(widget.photoList);
+            if (!mounted) return; // Widget dispose edildiyse devam etme
             final filteredList = ref.read(swipeImagesProvider);
             final prefs = await SharedPreferences.getInstance();
             final savedIndex =

@@ -392,7 +392,7 @@ class _SwipeImageViewState extends ConsumerState<SwipeImageView>
     if (currentIndex >= _localImages.length ||
         isListCompleted ||
         isPendingComplete) {
-      _pauseAllVideos(); // Tamamlandı ekranı gelmeden önce tüm videoları durdur
+      _pauseAllVideos(); 
       return Scaffold(
         appBar: AppBar(
           title: Text('Swipe', style: CustomTheme.textTheme(context).bodyLarge),
@@ -502,10 +502,17 @@ class _SwipeImageViewState extends ConsumerState<SwipeImageView>
     final nextVideoController =
         nextMedia != null ? _videoControllerCache[nextMedia.id] : null;
 
+    // Lazy loading: sona yaklaşıldıysa yeni batch yükle
+    if (currentIndex >= _localImages.length - 2) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(swipeImagesProvider.notifier).loadMore();
+      });
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          '${currentIndex + 1} / ${_localImages.length}',
+          '${currentIndex + 1}',
           style: CustomTheme.textTheme(context).bodyLarge,
         ),
         actions: [

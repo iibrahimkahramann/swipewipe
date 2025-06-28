@@ -30,33 +30,60 @@ class AlbumsState {
 // StateNotifier for albums
 class AlbumsNotifier extends StateNotifier<AlbumsState> {
   AlbumsNotifier() : super(AlbumsState()) {
+    print('AlbumsNotifier: Constructor called.');
     _loadAlbums();
   }
 
+  @override
+  void dispose() {
+    print('AlbumsNotifier: Disposed.');
+    super.dispose();
+  }
+
   Future<void> _loadAlbums() async {
-    final permission = await PhotoManager.requestPermissionExtend();
-    if (!permission.isAuth) {
-      state = state.copyWith(isLoading: false);
+    print('AlbumsNotifier: _loadAlbums called.');
+    if (state.albums.isNotEmpty && !state.isLoading) {
+      print('AlbumsNotifier: Albums already loaded and not loading, returning.');
       return;
     }
 
-    // Fetch all albums (both image and video) in one go
-    final albums = await PhotoManager.getAssetPathList(
-      type: RequestType.common, // Fetches both image and video
-      hasAll: true,
-    );
+    state = state.copyWith(isLoading: true);
+    print('AlbumsNotifier: Setting isLoading to true.');
 
-    // Filter out empty albums
-    final nonEmptyAlbums = <AssetPathEntity>[];
-    for (final album in albums) {
-      final count = await album.assetCountAsync;
-      if (count > 0) {
-        nonEmptyAlbums.add(album);
+    try {
+      final permission = await PhotoManager.requestPermissionExtend();
+      if (!permission.isAuth) {
+        print('AlbumsNotifier: Permission not granted.');
+        state = state.copyWith(isLoading: false);
+        return;
       }
-    }
 
-    state = state.copyWith(albums: nonEmptyAlbums, isLoading: false);
+      // Fetch all albums (both image and video) in one go
+      final albums = await PhotoManager.getAssetPathList(type: RequestType.common, hasAll: true);
+      print('AlbumsNotifier: Fetched ${albums.length} raw albums.');
+
+      final nonEmptyAlbums = <AssetPathEntity>[];
+      for (final album in albums) {
+        // 'Recents' (or 'All Photos') album is usually identified by isAll property
+        if (album.isAll || album.name == 'Recently Added' || album.name == 'Recently Saved') {
+          continue; // Skip this album
+        }
+        final count = await album.assetCountAsync;
+        if (count > 0) {
+          nonEmptyAlbums.add(album);
+        }
+      }
+      print('AlbumsNotifier: Found ${nonEmptyAlbums.length} non-empty albums.');
+
+      state = state.copyWith(albums: nonEmptyAlbums, isLoading: false);
+      print('AlbumsNotifier: Albums loaded successfully. isLoading set to false.');
+    } catch (e, stack) {
+      print('''AlbumsNotifier: Error loading albums: $e
+$stack''');
+      state = state.copyWith(isLoading: false);
+    }
   }
+
 
   // Lazily load the thumbnail for a specific album
   Future<void> loadAlbumThumbnail(AssetPathEntity album) async {
@@ -80,5 +107,6 @@ class AlbumsNotifier extends StateNotifier<AlbumsState> {
 
 // The provider for albums
 final albumsProvider = StateNotifierProvider<AlbumsNotifier, AlbumsState>((ref) {
+  ref.keepAlive(); // Provider'ın durumunu bellekte tut
   return AlbumsNotifier();
 });

@@ -3,27 +3,65 @@ import 'package:photo_manager/photo_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:swipewipe/views/swipe/swipe_image_view.dart';
+import 'package:flutter/foundation.dart'; // For compute
+import 'dart:ui'; // For RootIsolateToken
+import 'package:flutter/services.dart'; // For BackgroundIsolateBinaryMessenger
+
+// Top-level function to filter assets in a separate isolate
+Future<List<AssetEntity>> _filterAssetsInIsolate(Map<String, dynamic> args) async {
+  print('Isolate: _filterAssetsInIsolate started.');
+  BackgroundIsolateBinaryMessenger.ensureInitialized(args['token']);
+  final List<AssetEntity> images = args['images'];
+  final filtered = <AssetEntity>[];
+  for (final asset in images) {
+    try {
+      final file = await asset.originFile;
+      if (file != null && await file.exists()) {
+        filtered.add(asset);
+      }
+    } catch (e) {
+      // PlatformException veya diğer hatalar: asset'i ekleme, devam et
+      print('Isolate: Error checking asset ${asset.id}: $e');
+      continue;
+    }
+  }
+  print('Isolate: _filterAssetsInIsolate finished. Filtered ${filtered.length} assets.');
+  return filtered;
+}
 
 class SwipeImagesNotifier extends StateNotifier<List<AssetEntity>> {
   SwipeImagesNotifier() : super([]);
+
+  List<AssetEntity> _allAssets = [];
+  int _loadedCount = 0;
+  static const int _batchSize = 10;
 
   void setImages(List<AssetEntity> images) {
     state = images;
   }
 
-  Future<void> setImagesFiltered(List<AssetEntity> images) async {
-    final filtered = <AssetEntity>[];
-    for (final asset in images) {
-      try {
-        final file = await asset.originFile;
-        if (file != null && await file.exists()) {
-          filtered.add(asset);
-        }
-      } catch (e) {
-        // PlatformException veya diğer hatalar: asset'i ekleme, devam et
-        continue;
-      }
+  // Lazy loading başlatıcı
+  void setImagesLazy(List<AssetEntity> images) {
+    _allAssets = images;
+    _loadedCount = 0;
+    state = [];
+    loadMore();
+  }
+
+  // Sonraki batch'i yükle
+  void loadMore() {
+    final nextBatch = _allAssets.skip(_loadedCount).take(_batchSize).toList();
+    if (nextBatch.isNotEmpty) {
+      state = [...state, ...nextBatch];
+      _loadedCount += nextBatch.length;
     }
+  }
+
+  Future<void> setImagesFiltered(List<AssetEntity> images) async {
+    final filtered = await compute(_filterAssetsInIsolate, {
+      'token': RootIsolateToken.instance!,
+      'images': images,
+    });
     state = filtered;
   }
 

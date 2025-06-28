@@ -65,9 +65,9 @@ class _OrganizeViewState extends ConsumerState<OrganizeView> {
       height: height,
       width: width,
       onTap: () async {
-        await ref
+        ref
             .read(swipeImagesProvider.notifier)
-            .setImagesFiltered(state.assets);
+            .setImagesLazy(state.assets);
         final filteredList = ref.read(swipeImagesProvider);
         final prefs = await SharedPreferences.getInstance();
         final savedIndex = prefs.getInt('swipe_index_weekly') ?? 0;

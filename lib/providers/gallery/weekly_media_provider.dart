@@ -77,7 +77,7 @@ class WeeklyMediaNotifier extends StateNotifier<WeeklyMediaState> {
       return;
     }
 
-    final thumbData = await asset.thumbnailDataWithSize(const ThumbnailSize(200, 200));
+    final thumbData = await asset.thumbnailDataWithSize(const ThumbnailSize(600, 600));
 
     if (thumbData != null) {
       final newThumbnails = Map<String, Uint8List>.from(state.thumbnails);
