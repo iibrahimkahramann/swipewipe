@@ -36,7 +36,7 @@ class SplashView extends StatelessWidget {
             height: height * 0.01,
           ),
           Text(
-            'Swipewipe',
+            'Swipe Cleaner',
             style: CustomTheme.textTheme(context).bodyLarge,
           )
         ],
